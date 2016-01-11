@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>basic 창모드 예제 </title>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+    <script src='../libs/ramb3d/core.js'></script>
+
+
+</head>
+
+<body style="margin: 0px;">
+
+<div id='mycanvas' style="width: 320px;height: 240px;border: 1px solid" ></div>
+
+<script>
+
+    var container = document.querySelector('#mycanvas');
+
+    //창모드 실행하기
+    var Smgr = new ramb3d.scene.SceneManager({
+        renderer : {
+            container : container,
+            bkg_color : '#bbbbbb',
+            type : 'css3'
+        },
+        window_size : {
+            width : container.offsetWidth,
+            height: container.offsetHeight
+        },camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 500),
+            lookat : new THREE.Vector3()
+
+        }
+    });
+
+    /*
+    var object = ramb3d.util.createPlane({
+        //name : 'hello-plane',
+        width : 128,
+        height : 128,
+        color : 'red',
+        render_type : 'css3',
+        parent : Smgr.scene
+
+    });
+
+    //컨트롤러
+    ramb3d.util.setup_controlTest(Smgr.renderer.domElement,object);
+    */
+
+
+    //윈도우 싸이즈 조정
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    function onWindowResize() {
+
+        Smgr.updateAll({
+            resize : {
+                width :  window.innerWidth,
+                height : window.innerHeight
+            }
+        });
+
+    }
+    //루핑
+    (function loop() {
+
+        //씬업데이트
+        Smgr.updateAll();
+
+        requestAnimationFrame(loop);
+    })();
+
+
+
+
+</script>
+
+
+</body>
+</html>

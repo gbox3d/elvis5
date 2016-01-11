@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title></title>
+
+    <link rel="stylesheet" href="../libs/ramb3d/gbox3d.three.css"/>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <script src='../libs/ramb3d/gbox3d.CSS3DRenderer.js'></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+    <script src="../libs/d3/d3.min.js" charset="utf-8"></script>
+
+
+</head>
+<body style="margin: 0px;">
+
+
+<div id='mycanvas' style="width: 320px;height: 240px;"></div>
+
+
+<div id="container" ></div>
+
+<div>
+    <span style="width: 80px; display: inline-block" class="text-value"></span>
+    <input id='inp-angle' type="range" min=-180 max="180" value="0" />
+
+</div>
+
+<script>
+
+    (function() {
+
+//        console.log('tt');
+
+        //창모드 실행하기
+        var Smgr = new ramb3d.scene.SceneManager({
+            renderer : {
+                canvas_element : document.querySelector('#mycanvas'), //$('#mycanvas')[0],      //창으로 쓸 앨리먼트 지정
+                container : document.querySelector('#container'),
+                bkg_color : '#bbbbbb'
+            },
+            windowSize : {
+                width : 320,
+                height: 240
+            }
+        });
+
+        var scene = Smgr.scene;
+        var camera = Smgr.camera;
+
+        //트랙볼 카메라 컨트롤러 생성
+        var camController = Smgr.addTBCameraController(
+                {
+                    Smgr : Smgr,
+                    center : new THREE.Vector3(0,0,0),
+                    radius : 700
+                }
+        );
+
+        var color = new THREE.Color(0xff0000);
+
+        var plane = ramb3d.util.createPlane({
+            width : 256,
+            height : 128,
+            color : color.getStyle(),
+            parent : scene
+        });
+
+
+
+        var dummy = ramb3d.util.createDummy();
+
+        var light_dummy = ramb3d.util.createPlane({
+            width : 128,
+            height:128,
+            color : 'green',
+            parent:dummy,
+            position : new THREE.Vector3(0,-300,0)
+        });
+
+        scene.add(dummy);
+
+
+
+        Smgr.updateAll();
+
+
+        document.querySelector('#inp-angle')
+                .addEventListener("change",
+                function(evt) {
+
+                    //씬노드에 있는 노드들의 월드행렬들을 최신으로 모두 갱신해주기
+                    Smgr.scene.updateMatrixWorld(true);
+
+                    var lightDir = new THREE.Vector3()
+                            .subVectors(dummy.position,ramb3d.util.getAbsolutePosition(light_dummy))
+                            .normalize();
+
+                    var dot = lightDir.dot(plane.up);
+
+                    console.log(lightDir.dot(plane.up));
+
+                    document.querySelector(".text-value").innerText = evt.target.value;
+
+                    dummy.rotation.z = THREE.Math.degToRad(evt.target.value);
+
+                    if(dot <0 ) {
+                        dot = 0;
+                    }
+
+                    plane.element.style.backgroundColor =  (new THREE.Color(0,0,0).lerp(color,dot)).getStyle();
+
+
+                    Smgr.updateAll();
+
+                }
+        );
+
+
+
+    })();
+
+
+
+</script>
+
+
+</body>
+</html>

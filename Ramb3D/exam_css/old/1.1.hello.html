@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>basic</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
+    <script src='../libs/threejs/js/controls/OrbitControls.js'></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/ramb3d/util.js"></script>
+
+</head>
+
+<body style="margin: 0px;">
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 500),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'css3',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        }
+    });
+
+    //큐브만들기
+    var cubeObj = ramb3d.util.createCube({
+        size : 128,
+        texture :'../res/crate.jpg'
+    });
+
+
+    Smgr.scene.add(cubeObj);
+
+    //컨트롤러
+    ramb3d.util.setup_controlTest(Smgr.renderer.domElement,cubeObj);
+
+
+    //윈도우 싸이즈 조정
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    function onWindowResize() {
+
+        Smgr.updateAll({
+            resize : {
+                width :  window.innerWidth,
+                height : window.innerHeight
+            }
+        });
+
+    }
+
+    //루핑
+    (function loop() {
+
+        //씬업데이트
+        Smgr.updateAll();
+
+        requestAnimationFrame(loop);
+    })();
+
+
+
+</script>
+
+
+</body>
+</html>

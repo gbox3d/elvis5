@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>전체화면 예제 </title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>hello webgl</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+
+    <script src="../libs/cannon/cannon.js"></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, -10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+
+            var context = this;
+
+            var world = new CANNON.World();
+            world.gravity.set(0,0,0); //무중력
+            world.broadphase = new CANNON.NaiveBroadphase();
+            world.solver.iterations = 10;
+            context.world = world;
+
+
+            var shape = new CANNON.Box(new CANNON.Vec3(1,1,2));
+            var body = new CANNON.Body({
+                mass: 1,
+                shape : shape
+            });
+            //body.addShape(shape);
+            body.angularVelocity.set(0,10,0);
+            body.angularDamping = 0.2;
+            world.addBody(body);
+
+            var geometry = new THREE.CubeGeometry( 2, 2, 4 );
+            var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+
+            var mesh = new THREE.Mesh( geometry, material );
+            mesh.body = body;
+            this.scene.add( mesh );
+            this.mesh = mesh;
+
+            //----광선만들기
+            //var ray = new CANNON.Ray(new CANNON.Vec3(-5,0,0),new CANNON.Vec3(5,0,0));
+            //this.testRay = ray;
+
+            //헬퍼
+            var geometry = new THREE.SphereGeometry(0.25, 8, 8);
+            var hitHelper = new THREE.Mesh(geometry,new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ));
+            this.hitHelper = hitHelper;
+            this.scene.add(this.hitHelper);
+
+            //레이캐스터
+            this.raycaster = new THREE.Raycaster();
+            this.raycaster.set(
+                    new THREE.Vector3(-5,0,0),
+                    new THREE.Vector3(1,0,0)
+            );
+
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                // Step the physics world
+                this.world.step(1/60);
+
+                // Copy coordinates from Cannon.js to Three.js
+                this.mesh.position.copy(this.mesh.body.position);
+                this.mesh.quaternion.copy(this.mesh.body.quaternion);
+                var intersects = this.raycaster.intersectObject(this.mesh);
+
+                if(intersects.length > 0) {
+
+                    //console.log(intersects[0]
+                    this.hitHelper.position.set(
+                            intersects[0].point.x,
+                            intersects[0].point.y,
+                            intersects[0].point.z
+                    );
+
+                }
+
+                //this.testRay.intersectBody(this.mesh.body,this.testRay.result);
+                //this.testRay._updateDirection();
+                //this.testRay.intersectBox(this.mesh.body.shapes[0],this.mesh.body.quaternion,this.mesh.body.position,this.mesh.body)
+                //console.log(this.testRay.result);
+                //console.log(this.testRay.intersectBox(this.mesh.body.shapes[0],this.mesh.body.quaternion,this.mesh.body.position,this.mesh.body));
+
+
+
+                this.updateAll();
+            },
+            onMouseMove : function(event) {
+
+                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

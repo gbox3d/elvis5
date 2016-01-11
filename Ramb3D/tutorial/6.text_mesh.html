@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>text mesh</title>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+    <script src="../libs/ramb3d/core.js"></script>
+
+    <script src="../libs/threejs/fonts/nanumgothic_coding_regular.typeface.js"></script>
+
+</head>
+
+<body style="margin: 0px;">
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 40, 70),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            bkg_color : 0x010101
+        },
+        setup : function() {
+
+            var self = this;
+
+            this.renderer.setClearColor( 0x000000, 1 );
+
+            var material = new THREE.MeshFaceMaterial( [
+                new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
+                new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
+            ] );
+
+            // LIGHTS
+
+            var dirLight = new THREE.DirectionalLight( 0xffffff, 0.125 );
+            dirLight.position.set( 0, 0, 1 ).normalize();
+            this.scene.add( dirLight );
+
+            var pointLight = new THREE.PointLight( 0xffffff, 1.5 );
+            pointLight.position.set( 0, 100, 90 );
+            this.scene.add( pointLight );
+
+
+            var height = 2,
+                    size = 7,
+                    font = "nanumgothic_coding", // helvetiker, optimer, gentilis, droid sans, droid serif
+                    weight = "normal", // normal bold
+                    style = "normal"; // normal italic
+
+            var textGeo = new THREE.TextGeometry( "덕후가와", {
+
+                size: size,
+                height: height,
+                //curveSegments: curveSegments,
+
+                font: font,
+                weight: weight,
+                style: style,
+                material: 0,
+                extrudeMaterial: 1
+
+            });
+
+
+
+            textGeo.computeBoundingBox();
+            textGeo.computeVertexNormals();
+
+            console.log(textGeo);
+
+            var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+
+            var textMesh1 = new THREE.Mesh( textGeo, material );
+
+            textMesh1.position.x = centerOffset;
+            textMesh1.position.y = 0;
+            textMesh1.position.z = 0;
+
+            textMesh1.rotation.x = 0;
+            textMesh1.rotation.y = Math.PI * 2;
+
+            this.scene.add(textMesh1);
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
+            controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                this.updateAll();
+            },
+            onMouseMove : function(event) {
+
+                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+            }
+        }
+    });
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

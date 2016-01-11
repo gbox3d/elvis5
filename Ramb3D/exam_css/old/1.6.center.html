@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title></title>
+
+    <!--  <link rel="stylesheet" href="../libs/ramb3d/gbox3d.three.css"/>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+-->
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/CSS3DRenderer.js' ></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+    <!--
+    <script src="../libs/d3/d3.min.js" charset="utf-8"></script>
+
+-->
+
+</head>
+<body style="margin: 0px;">
+
+<script>
+
+    $(function() {
+
+        var Smgr = new ramb3d.scene.SceneManager({
+            cam : {
+                fov : 45,
+                far : 5000,
+                near : 1,
+                position : new THREE.Vector3(0, 0, 500),
+                lookat : new THREE.Vector3()
+            },
+            renderer : {
+                type : 'css3'
+            }
+        });
+
+        var object = ramb3d.util.createPlane({
+            name : 'hello-plane',
+            width : 128,
+            height : 128,
+            centerOrigin : '-50%,-50%',
+            texture : '../res/clala/1.jpeg',
+            render_type : 'css3',
+            parent : Smgr.scene
+
+        });
+
+        ramb3d.util.createPlane({
+            name : 'hello-plane',
+            width : 128,
+            height : 128,
+            centerOrigin : '0%,0%',
+            texture : '../res/clala/2.jpeg',
+            render_type : 'css3',
+            parent : Smgr.scene
+
+        });
+
+        ramb3d.util.createPlane({
+            name : 'hello-plane',
+            width : 128,
+            height : 128,
+            centerOrigin : '50%,50%',
+            texture : '../res/clala/3.jpeg',
+            render_type : 'css3',
+            parent : Smgr.scene
+
+        });
+
+
+        Smgr.updateAll();
+
+        //이벤트처리
+        var canvas_dom = Smgr.renderer.domElement;
+
+        canvas_dom.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        function onWindowResize() {
+
+            Smgr.updateAll({
+                resize : {
+                    width :  window.innerWidth,
+                    height : window.innerHeight
+                }
+            });
+
+        }
+
+        function onDocumentMouseDown( event ) {
+
+            //console.log('mdown');
+
+            event.preventDefault();
+
+            canvas_dom.addEventListener( 'mousemove', onDocumentMouseMove, false );
+            canvas_dom.addEventListener( 'mouseup', onDocumentMouseUp, false );
+
+        }
+
+        function onDocumentMouseMove( event ) {
+            var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+            console.log(event);
+
+            object.rotation.y += movementX * 0.01;
+            object.rotation.x -= movementY * 0.01;
+
+            //매트릭스 css3 적용
+//                object.updateMatrix();
+
+            Smgr.updateAll();
+
+
+        }
+
+        function onDocumentMouseUp( event ) {
+
+            canvas_dom.removeEventListener( 'mousemove', onDocumentMouseMove );
+            canvas_dom.removeEventListener( 'mouseup', onDocumentMouseUp );
+
+        }
+
+
+
+    });
+
+
+</script>
+
+</body>
+</html>

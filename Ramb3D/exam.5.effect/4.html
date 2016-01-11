@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>전체화면 예제 </title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>hello webgl</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+    <script src='../libs/extra/async.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3(0,0,0)
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+            var context = this;
+
+            this.InstanceBank = {
+                texture : {},
+                material : {},
+                node : {}
+            }
+
+
+            this.renderer.setPixelRatio( window.devicePixelRatio );
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+            async.waterfall([
+
+                        function(next) {
+
+                            var imgTexture = THREE.ImageUtils.loadTexture(
+                                    //"./almum_1.png",
+                                    //"../res/threejs/textures/lava/lavatile.jpg",
+                                    "./1k/tex-01.jpg",
+                                    undefined,
+                                    function() {
+
+                                        context.InstanceBank.texture.img = imgTexture;
+                                        next();
+
+                                    } );
+                            imgTexture.repeat.set( 1, 1 );
+                            imgTexture.wrapS = imgTexture.wrapT = THREE.RepeatWrapping;
+                            imgTexture.anisotropy = 16;
+
+                        },
+                        function(next) {
+                            var texture = THREE.ImageUtils.loadTexture( '../res/threejs/textures/2294472375_24a3b8ef46_o.jpg', THREE.UVMapping, function () {
+
+                                console.log('loading success..!');
+
+                                context.InstanceBank.texture.env_map = texture;
+
+                                next(null);
+
+                            } );
+                        },
+                        function(next) {
+
+                            var path = "../res/threejs/textures/cube/pisa/";
+                            //var format = '.jpg';
+                            var format = '.png';
+                            var urls = [
+                                path + 'px' + format, path + 'nx' + format,
+                                path + 'py' + format, path + 'ny' + format,
+                                path + 'pz' + format, path + 'nz' + format
+                            ];
+                            var reflectionCube = THREE.ImageUtils.loadTextureCube( urls );
+                            reflectionCube.format = THREE.RGBFormat;
+
+                            context.InstanceBank.texture.cubeMap = reflectionCube;
+
+                            next(null);
+                        },
+                        function(next) {
+
+                            console.log('texture loading complete..')
+
+                            var imgTexture = context.InstanceBank.texture.img;
+                            var imgTexture2 = context.InstanceBank.texture.img2;
+
+                            var shininess = 64, specular = 0x888888, bumpScale = 0.005, shading = THREE.SmoothShading;
+
+                            var geometry_smooth = new THREE.SphereBufferGeometry( 2.5, 32, 16 );
+
+                            /*var geometry_smooth =new THREE.PlaneGeometry(
+                                            4, 4,//가로세로 크기
+                                            8, 8 //나누기갯수
+                                    );
+                                    */
+
+                            var sphere = new THREE.Mesh( geometry_smooth, new THREE.MeshPhongMaterial( {
+                                metal: true,
+                                envMap: context.InstanceBank.texture.cubeMap,
+                                map: imgTexture,
+                                bumpMap: imgTexture,
+                                bumpScale: bumpScale,
+                                color: 0xffffff, specular: specular, shininess: shininess, shading: shading })
+                            );
+
+                            sphere.position.x = 0;
+                            sphere.position.z = 0;
+                            context.scene.add( sphere );
+                            context.scene.add( new THREE.AmbientLight( 0x444444 ) );
+
+                            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+                            directionalLight.position.set( 1, 1, 1 ).normalize();
+                            context.scene.add( directionalLight );
+
+                            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+                            directionalLight.position.set( -1, 1, 1 ).normalize();
+                            context.scene.add( directionalLight );
+
+                            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+                            directionalLight.position.set( 1, -1, 1 ).normalize();
+                            context.scene.add( directionalLight );
+
+                            context.InstanceBank.node.test1 = sphere;
+
+                            next(null);
+                        },
+                        function(next) {
+                            next(null);
+
+                        }
+                    ],
+                    function(err,result) {
+
+                        //프리 프로세싱
+                        context.preProcessing = function() {
+                            //this.InstanceBank.node.cubeCamera.updateCubeMap( this.renderer, this.scene );
+                        }
+
+
+                    });
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                this.updateAll();
+
+            },
+            onMouseMove : function(event) {
+
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

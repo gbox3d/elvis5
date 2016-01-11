@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>collusion </title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>hello webgl</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+
+    <script src="../libs/cannon/cannon.js"></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+
+            var self = this;
+            var context = this;
+
+
+            {
+                var world = new CANNON.World();
+                //world.gravity.set(0,0,0);
+                world.gravity.set(0,  -9.82,0); // m/s²
+
+                world.broadphase = new CANNON.NaiveBroadphase();
+                world.solver.iterations = 10;
+
+                //장애물박스만들기
+                var shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+
+                var body = new CANNON.Body({
+                    mass: 1,
+                    position : new CANNON.Vec3(0, 1, -5), // m
+
+                });
+                body.addShape(shape);
+                world.addBody(body);
+                //지오 메트리 만들기
+                var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+                var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+                var mesh = new THREE.Mesh( geometry, material );
+                this.scene.add( mesh );
+                mesh.body = body;
+                body.name = 'box';
+                this.mesh = mesh;
+
+
+
+
+                //그라운드만들기
+                // Create a plane
+                var groundShape = new CANNON.Plane(); //무한평면 (법선으로 방향지정 기본(0,0,1))
+                var groundBody = new CANNON.Body({ mass: 0 });
+                groundBody.name='ground';
+                groundBody.addShape(groundShape);
+                groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2); //90만큼 회전 시킨다
+                world.addBody(groundBody);
+                self.world = world;
+            }
+
+            // Sphere
+
+            var sphereBody = new CANNON.Body(
+                    {
+                        mass: 2 ,
+                        position : new CANNON.Vec3(0,3,-5),
+                        shape : new CANNON.Sphere(0.2)
+                    }
+            );
+
+            this.world.add(sphereBody);
+
+            this.ballGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+            this.ballMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
+            this.ballMesh = new THREE.Mesh( this.ballGeometry, this.ballMaterial );
+            this.ballMesh.body = sphereBody;
+            this.scene.add(this.ballMesh);
+
+            sphereBody.addEventListener("collide",function(e){
+                console.log("The sphere just collided with the " + e.body.name);
+
+                if(e.body.name =='box') {
+                    e.body.applyForce(new CANNON.Vec3(0,0,-2500), e.body.position)
+                }
+                //context.ballMesh.body.applyForce(new CANNON.Vec3(0,0,5), context.ballMesh.body.position)
+
+                console.log("Collided with body:",e.body);
+                console.log("Contact between bodies:",e.contact);
+            });
+
+
+
+
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+
+
+            //레이 캐스터
+            this.raycaster = new THREE.Raycaster();
+
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                // Step the physics world
+                this.world.step(1/60);
+
+                // Copy coordinates from Cannon.js to Three.js
+                this.mesh.position.copy(this.mesh.body.position);
+                this.mesh.quaternion.copy(this.mesh.body.quaternion);
+
+                this.ballMesh.position.copy(this.ballMesh.body.position);
+                this.ballMesh.quaternion.copy(this.ballMesh.body.quaternion);
+
+
+
+
+                this.updateAll();
+            },
+            onMouseMove : function(event) {
+
+                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+            },
+            onMouseDown : function(event) {
+
+//                var x = 0;
+//                var y = 1;
+//                var z = 0;
+//
+//                var ballBody = new CANNON.Body({
+//                    mass: 1,
+//                    position : new CANNON.Vec3(x,y,z), // m
+//                });
+//                ballBody.addShape(this.ballShape);
+//                var ballMesh = new THREE.Mesh( this.ballGeometry, this.ballMaterial );
+//                this.world.addBody(ballBody);
+//                this.scene.add(ballMesh);
+//                ballMesh.body = ballBody;
+//                this.ballMeshes.push(ballMesh);
+//                ballBody.velocity.set(  0,0,-50);
+//                ballMesh.position.set(x,y,z);
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

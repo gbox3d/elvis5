@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>basic</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
+    <script src='../libs/threejs/js/controls/OrbitControls.js'></script>
+    <script src="../libs/threejs/js/libs/tween.min.js"></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/ramb3d/util.js"></script>
+
+</head>
+
+<body style="margin: 0px;">
+
+<div id="container"></div>
+
+<script>
+
+    var renderer = new THREE.CSS3DRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.domElement.style.position = 'absolute';
+    document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 5000 );
+    camera.position.set( 0, 0, 1500 );
+    camera.lookAt( new THREE.Vector3() );
+
+    var scene = new THREE.Scene();
+
+    window.addEventListener( 'resize', function () {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }, false );
+
+    var image = document.createElement( 'img' );
+    var object;
+    image.addEventListener( 'load', function ( event ) {
+
+        console.log('load success');
+        object = new THREE.CSS3DObject( image.cloneNode() );
+        object.position.set(0,0,0);
+        //object.rotation.x = THREE.Math.degToRad(45);
+        scene.add( object );
+
+
+        new TWEEN.Tween( object.rotation )
+                .to( {
+                    x: THREE.Math.degToRad(-65),
+                    y: 0,
+                    z: 0
+                }, 1000)
+                .easing( TWEEN.Easing.Exponential.InOut )
+                .start();
+
+
+    }, false );
+    image.src = '../res/RTS_Crate.png';
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        TWEEN.update();
+
+        //object.rotation.x += THREE.Math.degToRad(1)
+
+        //TWEEN.update();
+        //controls.update();
+        //var time = performance.now();
+
+//        for ( var i = 0, l = objects.length; i < l; i ++ ) {
+//
+//            var object = objects[ i ];
+//            var scale = Math.sin( ( Math.floor( object.position.x ) + time ) * 0.002 ) * 0.3 + 1;
+//            object.scale.set( scale, scale, scale );
+//
+//        }
+
+        renderer.render( scene, camera );
+
+    }
+
+    animate();
+
+
+
+
+</script>
+
+
+</body>
+</html>

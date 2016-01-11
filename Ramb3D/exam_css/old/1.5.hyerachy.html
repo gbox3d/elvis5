@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>hyerachy sample</title>
+
+    <!--<link rel="stylesheet" href="../libs/ramb3d/gbox3d.three.css"/>-->
+
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+
+    <script src='../libs/ramb3d/core.js'></script>
+    <script src='../libs/gbox3d/core.js'></script>
+    <script>
+
+        $(function() {
+
+            //씬메니져 얻어오기
+            var Smgr = new ramb3d.scene.SceneManager();
+
+
+            var dummy = ramb3d.util.createDummy();
+
+            //씬노드 추가
+            //더미노드의 자식으로 등록
+            var object = ramb3d.util.createPlane({
+                name : 'plane-test',
+                width : 50,
+                height : 50,
+                color : 'red',
+                parent : dummy
+            });
+
+            object = ramb3d.util.createPlane({
+                name : 'plane-test',
+                width : 50,
+                height : 50,
+                color : 'blue',
+                parent : dummy
+
+            });
+            object.position.set(50,0,0);
+
+            Smgr.scene.add(dummy);
+
+            var cloneObj = dummy.clone();
+            cloneObj.position.set(0,200,0);
+
+            Smgr.scene.add(cloneObj);
+
+            //씬업데이트
+            Smgr.updateAll();
+
+        });
+
+
+    </script>
+
+</head>
+
+<body style="margin: 0px;">
+
+
+</body>
+</html>

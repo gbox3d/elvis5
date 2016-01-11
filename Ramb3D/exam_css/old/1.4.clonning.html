@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>tiny sample</title>
+
+    <!--<link rel="stylesheet" href="../libs/ramb3d/gbox3d.three.css"/>-->
+
+
+    <script src='../libs/jquery-1.9.1.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+    <script src='../libs/ramb3d/core.js'></script>
+    <script src='../libs/gbox3d/core.js'></script>
+
+    <script>
+
+        $(function() {
+
+            //씬메니져 얻어오기
+            var Smgr = new ramb3d.scene.SceneManager();
+
+            //씬노드 추가
+            var object = ramb3d.util.createPlane({
+                name : 'hello-plane',
+                width : 128,
+                height : 128,
+                color : 'red',
+                parent : Smgr.scene
+
+            });
+
+
+            var cloneObj = object.clone();
+            cloneObj.position.set(128,0,0);
+            $(cloneObj.element).css('background-color','blue');
+            Smgr.scene.add(cloneObj);
+
+            var blue_clone = cloneObj;
+
+            cloneObj = object.clone();
+            cloneObj.position.set(-128,0,0);
+            $(cloneObj.element).css('background-color','green');
+            Smgr.scene.add(cloneObj);
+
+            var green_clone = cloneObj;
+
+
+            var gbox_Timer = new gbox3d.core.Timer();
+
+            function loop() {
+
+                var deltaTime = gbox_Timer.getDeltaTime();
+
+                //초당 45도 회전
+                blue_clone.rotation.x += THREE.Math.degToRad(45) * deltaTime;
+                green_clone.rotation.y -= THREE.Math.degToRad(45) * deltaTime;
+                object.rotation.y += THREE.Math.degToRad(45) * deltaTime;
+
+                //씬업데이트
+                Smgr.updateAll();
+
+                requestAnimationFrame(loop);
+            }
+
+            loop();
+
+        });
+
+
+    </script>
+
+</head>
+
+<body style="margin: 0px;">
+
+
+</body>
+</html>

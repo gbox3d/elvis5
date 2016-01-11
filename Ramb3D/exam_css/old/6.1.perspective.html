@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title></title>
+
+
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+
+</head>
+
+<body style="margin: 0px;">
+
+<div id='mycanvas' style="width: 320px;height: 240px;border: 1px solid" ></div>
+
+fov
+<input id='fov' type="range" max="180" min="0" value="90" ><span>90</span></br>
+distance
+<input id='dist' type="range" max="1800" min="0" value="500" ><span>500</span></br>
+
+
+<script>
+
+    //창모드 실행하기
+    var Smgr = new ramb3d.scene.SceneManager({
+        renderer : {
+            container : document.querySelector('#mycanvas'),
+
+            bkg_color : '#bbbbbb',
+            type : 'css3'
+        },
+        window_size : {
+            width : 320,
+            height: 240
+        },camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 500),
+            lookat : new THREE.Vector3()
+
+        }
+    });
+
+    var scene = Smgr.scene;
+    var camera = Smgr.camera;
+
+    camera.fov = document.querySelector('#fov').value;
+
+    //트랙볼 카메라 컨트롤러 생성
+    var tbCam = Smgr.addTBCameraController(
+            {
+                Smgr : Smgr,
+                center : new THREE.Vector3(0,0,0),
+                radius : 500
+            }
+    );
+
+
+    var line = new ramb3d.util.createLine({
+        color : new THREE.Color(0xff0000),
+        start: new THREE.Vector3(0,-128,0),
+        end : new THREE.Vector3(0,128,0),
+        thick : {
+            w : 256,
+            h : 256
+        }
+    });
+
+
+    Smgr.scene.add(line);
+
+
+    Smgr.updateAll();
+
+    document.addEventListener('change',function() {
+        camera.fov = document.querySelector('#fov').value;
+
+        document.querySelector('#fov').nextSibling.innerText = camera.fov;
+
+        tbCam.setRadius( document.querySelector('#dist').value);
+        tbCam.apply();
+
+        document.querySelector('#dist').nextSibling.innerText = document.querySelector('#dist').value;
+
+        Smgr.updateAll();
+
+    });
+
+
+
+</script>
+
+</body>
+</html>
