@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title> basic </title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<div >
+
+    <div id='mycanvas' style="
+    margin: auto;
+    width: 640px;height: 480px;border: 1px solid" ></div>
+
+    <div id="text-log" >
+        <div class="mouse-pos" ></div>
+    </div>
+
+</div>
+
+<script>
+
+    var container_window_element = document.querySelector('#mycanvas');
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            container : document.querySelector('#mycanvas'),
+            clear : {
+                color : 0x000000,
+                alpha : 0.5 //배경색 투명도
+            }
+
+        },
+        window_size : { //창모드일경우 반드시 지정
+            width : container_window_element.offsetWidth,
+            height: container_window_element.offsetHeight
+        },
+        setup : function() {
+
+            var self = this;
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            //본헬퍼(삼각뿔)
+            var geometry = new THREE.CylinderGeometry(
+                    0, //윗면 크기
+                    0.5,//아랫면크기
+                    2, //길이
+                    3 //면갯수
+            );
+            geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler( new THREE.Euler( THREE.Math.degToRad(-90) ,  0, 0 ) ) );
+
+            this.object = {};
+
+            var mesh = THREE.SceneUtils.createMultiMaterialObject( geometry, [
+                new THREE.MeshBasicMaterial( { color: 0xffff00 } ),
+                new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ] );
+            mesh.position.set(0,0,0);
+
+            this.scene.add(mesh);
+
+            this.object.arm1 = mesh;
+
+
+
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0) ;//= new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            //controls.target.set(new THREE.Vector3( 0, 0, 0 ));
+            controls.update();
+
+        },
+        event : {
+            onWindowResize : function(evt) {
+
+                if(this.window_size) {
+
+                }
+                else { //전체 화면일경우
+                    this.updateAll({
+                        resize : {
+                            width :  window.innerWidth,
+                            height : window.innerHeight
+                        }
+                    });
+                }
+            },
+            onMouseMove : function(event) {
+
+
+                var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+                document.querySelector('#text-log .mouse-pos').innerText = mx.toFixed(2) + ',' + my.toFixed(2);
+
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+                switch (event.keyCode) {
+                    case 65: //A
+                            /*
+                            업데이트가 일어나면 기본적으로 position,rotation,scale 값을 가지고 메트릭스를 재설정하므로
+                            메트릭스에 직접 값을 써넣기위해서는 matrixAutoUpdate 를 false로 처리해주어야한다.
+                            그러면 updateAll 에서 해당 오브잭트만 메트릭스가 재설정되지않는다.
+                            그렇지 않으면 메트릭스가 현재의 변환값들(position,rotation,scale)을 가지고 재설정이 된다.
+
+                            */
+                        this.object.arm1.matrix.setPosition(new THREE.Vector3(1,0,0));
+                        this.object.arm1.matrixAutoUpdate = false;
+                        break;
+                    case 83: //S
+                            /*
+                            사용자가 임의대로 updateMatrix 를 호출하면 matrixAutoUpdate 를 false 속성을 주었더라도 상관없이 메트릭스가 재설정된다.
+                            */
+                        this.object.arm1.updateMatrix();
+                        break;
+                    case 68: //D
+
+                            /*
+                            역으로 메트릭스값으로 position,quaternion,scale 을 재설정하는 예이다.
+                            이때는 updateMatrix 를 하더라도 메트릭스로 직접넣은 변환들이 보존될것이다.
+                            */
+                        this.object.arm1.matrix.decompose(
+                                this.object.arm1.position,
+                                this.object.arm1.quaternion,
+                                this.object.arm1.scale
+                        );
+
+                        this.object.arm1.matrixAutoUpdate = true;
+
+                        break;
+
+                }
+            },
+            onUpdate : function(event) {
+
+                /*
+                 event 인자
+                 deltaTick : 루프지연시간 (ms)
+                 */
+
+                //console.log(event);
+
+
+
+                this.updateAll();
+
+
+            }
+        }
+    });
+
+    /*
+
+    document.querySelector('#btn-test').addEventListener('click',function() {
+
+        var node = Smgr.scene.getObjectByName('wire_cube');
+
+        var test_mat = new THREE.Matrix4();
+
+        test_mat.setPosition(new THREE.Vector3(2,0,0));
+        node.applyMatrix(test_mat); //곱해진다.
+
+
+    });
+
+    document.querySelector('#btn-test-2').addEventListener('click',function() {
+
+        var node = Smgr.scene.getObjectByName('wire_cube');
+
+        var test_mat = new THREE.Matrix4();
+
+        //이동
+        var vector_translation = new THREE.Vector3(-2,0,0);
+
+        //회전
+        var euler_rot = new THREE.Euler( 0, 0, THREE.Math.degToRad(45), 'XYZ' );
+        var qt_test = new THREE.Quaternion();
+        qt_test.setFromEuler(euler_rot);
+
+        test_mat.compose(vector_translation,qt_test,new THREE.Vector3(1,1.5,1));
+        node.applyMatrix(test_mat);
+        node.matrixAutoUpdate = false;
+
+
+        //console.log(node.matrix.extractRotation(node.matrix));
+
+    });
+
+    document.querySelector('#btn-test-3').addEventListener('click',function() {
+
+        var node = Smgr.scene.getObjectByName('wire_cube');
+
+        node.translateOnAxis(new THREE.Vector3(0,0,1),-0.5);
+
+    });
+
+    document.querySelector('#btn-test-4').addEventListener('click',function() {
+
+        var node = Smgr.scene.getObjectByName('wire_cube');
+
+        node.rotateOnAxis(new THREE.Vector3(0,1,0),45.0);
+
+    });
+
+    */
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>shadow for directional light</title>
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../libs/threejs/js/loaders/MTLLoader.js"></script>
+    <script src="../libs/threejs/js/loaders/OBJMTLLoader.js"></script>
+
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+
+<body style="margin: 0px;">
+
+<script>
+
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl'
+        }
+    });
+
+    //샤도우멥 활성화
+    Smgr.renderer.gammaInput = true;
+    Smgr.renderer.gammaOutput = true;
+    Smgr.renderer.shadowMapEnabled = true;
+    Smgr.renderer.shadowMapCullFace = THREE.CullFaceBack;
+    Smgr.renderer.setClearColor( 0x9966FF, 1 );
+
+    //주변광 설정
+    var ambient = new THREE.AmbientLight( 0x444444 );
+    Smgr.scene.add( ambient );
+
+
+    //그림자를 생성해주는 방향성광
+    var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.35 );
+    directionalLight.position.set( 50,50, 50 );
+
+    //그림자 캐스팅 허용
+    directionalLight.castShadow = true;
+
+
+    //그림자 계산용 절두체 설정해주기
+    var d = 50;
+    directionalLight.shadowCameraVisible = true; //샤도우 카메라 영역 보여주기
+
+    //샤도우카메라범위값은 기본값이 500
+    directionalLight.shadowCameraLeft = -d;
+    directionalLight.shadowCameraRight = d;
+    directionalLight.shadowCameraTop = d;
+    directionalLight.shadowCameraBottom = -d;
+
+    directionalLight.shadowCameraNear = 10;
+    directionalLight.shadowCameraFar = 250;
+
+    //그림자멥 (클수록 그림자가 정확하나 메모리를 많이차지함)
+    directionalLight.shadowMapWidth = 1024;
+    directionalLight.shadowMapHeight = 1024;
+
+    Smgr.scene.add( directionalLight );
+
+
+    // Ground
+    var plane = new THREE.Mesh(
+            new THREE.PlaneGeometry( 100, 100,1,1 ),
+            new THREE.MeshPhongMaterial( { ambient: 0x999999, color: 0xff0000, specular: 0x101010} )
+    );
+    plane.rotation.x = -Math.PI/2;
+    plane.position.y = 0;
+    plane.receiveShadow = true; //그리운드는 일발적으로 그림자를 받기만 한다.
+
+    Smgr.scene.add( plane );
+
+
+    // model
+    var loader = new THREE.OBJMTLLoader();
+    loader.load( '3D_target/target.obj', '3D_target/target.mtl',
+            function ( object )
+            {
+                object.scale.set( 0.01, 0.01, 0.01 );
+                Smgr.scene.add(object);
+
+                object.castShadow = true;
+                object.receiveShadow = true;
+
+                object.traverse(function(obj) {
+
+                    console.log(obj);
+
+                    obj.castShadow = true;
+                    //obj.receiveShadow = true;
+
+                });
+                console.log(object);
+            } );
+
+    //카메라의 현재 위치 기준으로 시작한다.
+    var controls = new THREE.OrbitControls( Smgr.camera );
+    controls.target.set(0,0,0) ;//= new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+    //controls.target.set(new THREE.Vector3( 0, 0, 0 ));
+    controls.update();
+//
+//
+//
+//    ////////
+//    //트랙볼 카메라 컨트롤러 생성
+//    var tbcc = Smgr.addTBCameraController(
+//            {
+//                Smgr : Smgr,
+//                center : new THREE.Vector3(0,0,0),
+//                radius : 100
+//            }
+//    );
+//    tbcc.setRotation(THREE.Math.degToRad(-25),0,0)
+//            .apply();
+
+
+    //윈도우 싸이즈 조정
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    function onWindowResize() {
+
+        Smgr.updateAll({
+            resize : {
+                width :  window.innerWidth,
+                height : window.innerHeight
+            }
+        });
+
+    }
+
+    //루핑
+    (function loop() {
+
+        //씬업데이트
+        Smgr.updateAll();
+
+        requestAnimationFrame(loop);
+    })();
+
+
+
+</script>
+
+
+</body>
+</html>

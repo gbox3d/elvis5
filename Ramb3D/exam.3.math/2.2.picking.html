@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title> picking </title>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+    <script src="../libs/ramb3d/core.js"></script>
+
+    <script src="js/controls/OrbitControls.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 20),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+
+        },
+        event : {
+            onWindowResize : function(evt) {
+
+                Smgr.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onMouseMove : function(event) {
+
+                var mx = ( event.clientX / window.innerWidth ) * 2 - 1;
+                var my = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+                var vector = new THREE.Vector3( mx, my, 0.5 ).unproject( Smgr.camera );
+
+                raycaster.set( Smgr.camera.position, vector.sub( Smgr.camera.position ).normalize() );
+
+                var intersects = raycaster.intersectObjects( Smgr.scene.children );
+
+                if ( intersects.length > 0 ) {
+
+                    intersects[ 0 ].object.material = material_hit;
+
+                    console.log(intersects.length)
+
+                }
+                else {
+
+                }
+                //node.position.set(vector.x,vector.y,vector.z);
+            },
+            onUpdate : function(event) {
+
+                Smgr.updateAll();
+
+            }
+        }
+    });
+
+    var raycaster = new THREE.Raycaster();
+
+
+    //씬노드 추가
+    var geometry = new THREE.CubeGeometry(1,1,1);
+    var material = new THREE.MeshBasicMaterial(
+            {
+                color: 0x00ff00,
+                wireframe : true
+
+            }
+    );
+    var material_hit = new THREE.MeshBasicMaterial(
+            {
+                color: 0xffff00,
+                wireframe : true
+
+            }
+    );
+
+    var node = new THREE.Mesh(geometry, material);
+    Smgr.scene.add(node);
+
+    //카메라의 현재 위치 기준으로 시작한다.
+    var controls = new THREE.OrbitControls( Smgr.camera );
+    controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+    controls.update();
+
+
+</script>
+
+</body>
+</html>
