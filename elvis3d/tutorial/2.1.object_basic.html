@@ -2,17 +2,18 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title> basic sample </title>
+    <title> object sample </title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
 
 
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
     <script src="../libs/ramb3d/core.js"></script>
 
 </head>
@@ -20,7 +21,7 @@
 
 <script>
 
-    var Smgr = new ramb3d.scene.SceneManager({
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
             far : 5000,
@@ -43,28 +44,30 @@
             var geometry = new THREE.CubeGeometry(1,1,1);
             var material = new THREE.MeshBasicMaterial(
                     {
-                        color: 0x00ff00,
-                        wireframe : true
-
+                        color: 0x00ff00
+                    }
+            );
+            var texture = THREE.ImageUtils.loadTexture( '../res/RTS_Crate.png');
+            texture.anisotropy = this.renderer.getMaxAnisotropy();
+            var material2 = new THREE.MeshBasicMaterial(
+                    {
+                        map : texture
                     }
             );
 
             //메쉬오브잭트 만들기
             var node = new THREE.Mesh(geometry, material);
-
-            //위치넣기
-            node.position.set(1,0,0);
-            //크기바꾸기
-            node.scale.set(1,2,1);
-
             this.scene.add(node);
 
-            //퍼블릭 변수로
-            this.wire_cube = node;
+            var node = new THREE.Mesh(geometry, material2);
+            node.position.set(1,0,-1);
+            node.rotation.set(0,THREE.Math.degToRad(45),0);
+            this.scene.add(node);
+
 
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
-            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
             controls.update();
 
             //그리드헬퍼
@@ -83,13 +86,13 @@
                 });
             },
             onUpdate : function(event) {
-                var node  = this.wire_cube;
-                node.rotation.x += THREE.Math.degToRad(45) * event.deltaTick;
-                node.rotation.y += THREE.Math.degToRad(45) * event.deltaTick;
+
 
                 this.updateAll();
             },
             onMouseMove : function(event) {
+
+                //원점 기준으로 마우스 포잍어 변경하기
                 var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
                 var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
             },

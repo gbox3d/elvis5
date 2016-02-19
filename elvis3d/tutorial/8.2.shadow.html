@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>light sample</title>
+    <title>shadow sample</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -23,7 +23,7 @@
 <script>
 
 
-    var Smgr = new ramb3d.scene.SceneManager({
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
             far : 5000,
@@ -33,13 +33,15 @@
 
         },
         renderer : {
-            type : 'webgl',
-            clear : {
-                color : 0x000000,
-                alpha : 1
-            }
+            type : 'webgl'
         },
         setup : function() {
+
+            this.renderer.gammaInput = true;
+            this.renderer.gammaOutput = true;
+
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.cullFace = THREE.CullFaceBack;
 
             //3디오브잭트용 리소스 생성
             var cube_geometry = new THREE.CubeGeometry(1,1,1);
@@ -49,7 +51,6 @@
                     } );
 
             // Ground
-
             var plane = new THREE.Mesh(
                     new THREE.PlaneGeometry( 4, 4 ),
                     new THREE.MeshPhongMaterial(
@@ -60,6 +61,9 @@
             plane.position.y = 0;
             this.scene.add( plane );
 
+            //그림자 받기
+            plane.receiveShadow = true;
+
             //object
             var cube = new THREE.Mesh(
                     cube_geometry,cube_material
@@ -69,15 +73,39 @@
             cube.castShadow = true;
             this.scene.add(cube);
 
-            //방향광
+
+
+            //샤도우 라이트
             var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.35 );
             directionalLight.position.set( 2, 2, 2 )
             this.scene.add( directionalLight );
 
-            //헬퍼
-            directionalLight.helper = new THREE.DirectionalLightHelper(directionalLight,1);
-            this.scene.add(directionalLight.helper);
-            this.light = directionalLight;
+            directionalLight.castShadow = true;
+
+            //directionalLight.shadowCameraVisible = true;
+
+            var d = 1;
+            directionalLight.shadowCameraLeft = -d;
+            directionalLight.shadowCameraRight = d;
+            directionalLight.shadowCameraTop = d;
+            directionalLight.shadowCameraBottom = -d;
+
+            directionalLight.shadowCameraNear = 1;
+            directionalLight.shadowCameraFar = 5;
+
+            directionalLight.shadowMapWidth = 256;
+            directionalLight.shadowMapHeight = 256;
+
+            this.shadow_light = directionalLight;
+
+            directionalLight.shadowCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+            this.scene.add(directionalLight.shadowCameraHelper);
+
+
+
+            //광역 주변광
+            var ambient = new THREE.AmbientLight( 0x222222 );
+            this.scene.add( ambient );
 
             //그리드헬퍼
             var helper =  new THREE.GridHelper( 50, 1 );
@@ -109,8 +137,6 @@
                 });
             },
             onUpdate : function(event) {
-
-                this.light.helper.update();
 
                 this.updateAll();
             },

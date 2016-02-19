@@ -14,12 +14,12 @@
 
 <script>
 
-    var Smgr = new ramb3d.scene.SceneManager({
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
             far : 5000,
             near : 1,
-            position : new THREE.Vector3(0, 5, 10),
+            position : new THREE.Vector3(0, 2, 5),
             lookat : new THREE.Vector3()
 
         },
@@ -33,18 +33,48 @@
         setup : function() {
 
             //초기화 코드는 여기에서 코딩한다.
-            var scope = this;
+            var self = this;
+
+            var texloader = new THREE.TextureLoader();
+            texloader.load('../res/hell_chosun.jpg',function(texture) {
+
+                var material = new THREE.SpriteMaterial( { map: texture.clone(), color: 0xffffff } );
+                material.map.needsUpdate = true;
+                var sprite = new THREE.Sprite( material );
+
+                var ratio = texture.image.height/texture.image.width;
+                var scale = 1.0;
+
+                sprite.position.set(0,0,0);
+                sprite.scale.set(1 * scale,ratio * scale)
+                self.scene.add(sprite);
+
+                var material = new THREE.SpriteMaterial( { map: texture.clone(), color: 0xffffff } );
+                material.map.offset.set(-0.5,-0.5);
+                material.map.repeat.set(2,2)
+                material.map.needsUpdate = true;
+                var sprite = new THREE.Sprite( material );
+
+                var ratio = texture.image.height/texture.image.width;
+                var scale = 1.0;
+
+
+                sprite.position.set(2,0,0);
+                sprite.scale.set(1 * scale,ratio * scale)
+                self.scene.add(sprite);
+            });
 
             //그리드헬퍼
             var helper =  new THREE.GridHelper( 50, 1 );
             helper.setColors(0x00ff00,0xff0000);
-            scope.scene.add(helper);
+            this.scene.add(helper);
 
             //오빗컨트롤
             //카메라의 현재 위치 기준으로 시작한다.
-            var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
-            controls.target.set(0,0,0);
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
             controls.update();
+
 
         },
         event : {

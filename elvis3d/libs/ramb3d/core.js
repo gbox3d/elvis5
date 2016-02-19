@@ -22,6 +22,11 @@ ramb3d = {
     scene : {}
 }
 
+//네이스페이스설정
+esparty = {
+}
+esparty.elvis3d = ramb3d;
+
 
 
 
