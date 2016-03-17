@@ -8,12 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
     <title>texture basic</title>
-
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
     <script src='../libs/threejs/three.js'></script>
-    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
     <script src="../libs/ramb3d/core.js"></script>
+
 </head>
 <body style="margin: 0px;" >
 
@@ -46,35 +44,44 @@
             helper.setColors(0x00ff00,0xff0000);
             this.scene.add(helper);
 
+            var textureLoader = new THREE.TextureLoader();
 
-            var texture = THREE.ImageUtils.loadTexture( '../res/T34_strip2.png');
+            textureLoader.load( '../res/T34_strip2.png',
+                    function(texture) { //success
+                        //투명컬러값 적용하지 않음.
+                        var geometry = new THREE.PlaneGeometry(1,1);
+                        texture.anisotropy = this.renderer.getMaxAnisotropy();
+                        var material = new THREE.MeshBasicMaterial(
+                                {
+                                    map : texture
+                                }
+                        );
+                        var node = new THREE.Mesh(geometry, material);
+                        node.name = 'test cube';
+                        this.scene.add(node);
 
-            //투명컬러값 적용하지 않음.
-            var geometry = new THREE.PlaneGeometry(1,1);
-            texture.anisotropy = this.renderer.getMaxAnisotropy();
-            var material = new THREE.MeshBasicMaterial(
-                    {
-                        map : texture
+                        //투명컬러값적용된 텍스춰적용
+                        var geometry = new THREE.PlaneGeometry(1,1);
+                        texture.anisotropy = this.renderer.getMaxAnisotropy();
+                        var material = new THREE.MeshBasicMaterial(
+                                {
+                                    map : texture,
+                                    transparent : true //투명 컬러값 적용시킴
+                                }
+                        );
+                        var node = new THREE.Mesh(geometry, material);
+                        node.position.x=1;
+                        this.scene.add(node);
+
+                    }.bind(this),
+                    function(xhr) { //progress
+                        console.log(xhr)
+
+                    },
+                    function(xhr) { //error
+
                     }
             );
-            var node = new THREE.Mesh(geometry, material);
-            node.name = 'test cube';
-            this.scene.add(node);
-
-
-            //투명컬러값적용된 텍스춰적용
-            var geometry = new THREE.PlaneGeometry(1,1);
-            var texture = THREE.ImageUtils.loadTexture( '../res/T34_strip2.png');
-            texture.anisotropy = this.renderer.getMaxAnisotropy();
-            var material = new THREE.MeshBasicMaterial(
-                    {
-                        map : texture,
-                        transparent : true //투명 컬러값 적용시킴
-                    }
-            );
-            var node = new THREE.Mesh(geometry, material);
-            node.position.x=1;
-            this.scene.add(node);
 
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera,this.renderer.domElement );

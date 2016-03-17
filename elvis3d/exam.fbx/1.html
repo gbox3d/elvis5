@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>전체화면 예제 </title>
+    <title>fbx 예제 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
     <script src='../libs/threejs/three.js'></script>
@@ -11,6 +11,8 @@
     <script src="./FBXLoader.js"></script>
 
     <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/threejs/gbox_ext/loader.js"></script>
+    <script src="animation_mixer.js"></script>
 
 
 
@@ -18,6 +20,10 @@
 <body style="margin: 0px;" >
 
 <script>
+
+    var skinned_mesh;
+    var mixers = [];
+    var clock = new THREE.Clock();
 
     var Smgr = new  esparty.elvis3d.scene.SceneManager({
         camera : {
@@ -51,7 +57,6 @@
             controls.target.set(0,0,0);
             controls.update();
 
-
             // model
             var manager = new THREE.LoadingManager();
             manager.onProgress = function( item, loaded, total ) {
@@ -74,47 +79,105 @@
             var onError = function( xhr ) {
             };
 
+            //본헬퍼(삼각뿔)
+            var bone_geometry = new THREE.CylinderGeometry(
+                    0, //윗면 크기
+                    0.1,//아랫면크기
+                    0.1, //길이
+                    3 //면갯수
+            );
+            bone_geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler( new THREE.Euler( THREE.Math.degToRad(-90) ,  0, 0 ) ) );
+
+
+            //var mixers = [];
             var loader = new THREE.FBXLoader( manager );
             //
-            loader.load( './fbx/xsi_man_skinning.fbx', function( object ) {
-            //loader.load( './female_zomb_v1.FBX', function( object ) {
+            loader.load( './fbx/test_FBX_Z.FBX',
+                    function( object ) {
 
-                console.log(object)
+                        //var skinnedMesh = object.children[0];
 
-                /*
-                object.traverse( function( child ) {
+                        skinned_mesh = object.children[0];
 
-                    if ( child instanceof THREE.Mesh ) {
+                        //object.children[0].material.map = texture;
+                        object.children[0].material.color.setRGB(1,1,1);
+                        object.children[0].material.skinning = true;
+                        object.children[0].material.wireframe = true;
+                        console.log(object.children[0].material)
+                        object.rotation.x = THREE.Math.degToRad(-90);
+                        object.position.y = 1;
 
-                        // pass
+                        object.traverse(function(obj) {
 
-                    }
+                            if(obj != object) {
 
-                    if ( child instanceof THREE.SkinnedMesh ) {
+                                if(obj instanceof THREE.Bone ) {
 
-                        if ( child.geometry.animations !== undefined || child.geometry.morphAnimations !== undefined ) {
+                                    console.log( obj.name + ',' + obj.getWorldPosition().y );
 
-                            child.mixer = new THREE.AnimationMixer( child );
-                            mixers.push( child.mixer );
+                                    var mesh = THREE.SceneUtils.createMultiMaterialObject( bone_geometry, [
+                                        new THREE.MeshBasicMaterial( { color: 0xffff00 } ),
+                                        new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ] );
+                                    mesh.position.set(0,0,0);
+                                    obj.add(mesh);
 
-                            var action = child.mixer.clipAction( child.geometry.animations[ 0 ] );
-                            action.play();
+                                }
+
+
+                                var child = obj;
+                                if ( child instanceof THREE.SkinnedMesh ) {
+
+                                    if ( child.geometry.animations !== undefined || child.geometry.morphAnimations !== undefined ) {
+
+                                        child.mixer = new THREE.AnimationMixer( child );
+                                        mixers.push( child.mixer );
+                                        //var action = child.mixer.clipAction( child.geometry.animations[ 0 ] );
+                                        //action.play();
+
+
+                                    }
+
+                                }
+
+
+                            }
+
+
+                        });
+
+
+
+                        //액션 객체 생성
+                        skinned_mesh.mixer.clipAction(skinned_mesh.geometry.animations[0])
+
+                        skinned_mesh.mixer.addEventListener('loop',function(evt) {
+                            console.log('loop')
+                            console.log(evt)
+                        })
+
+                        skinned_mesh.geometry.animations[0].startAnimPos = 3.5 //시작 지정
+                        skinned_mesh.geometry.animations[0].duration = 4.9 //끝지정
+
+                        skinned_mesh.mixer.existingAction(skinned_mesh.geometry.animations[0]).reset(); //시작지정위치부터 시작하도록.
+                        skinned_mesh.mixer.existingAction(skinned_mesh.geometry.animations[0]).play(); //애니메이션 시작
+
+                        //scene.add( object );
+                        scope.scene.add(object);
+
+                    }, onProgress, onError,
+                    function(geometry,matrial) {
+                        console.log(geometry)
+
+                        geometry.bones[1].pos[1] = 0;
+                        //THREE.gbox_extention.loader.repairBoneZData(geometry.bones)
+                        for(var i=0; i < geometry.bones.length;i++) {
+
+                            console.log(geometry.bones[i]);
+                            //geometry.bones[i].pos[2] = 0 - geometry.bones[i].pos[2];
 
                         }
-
                     }
-
-                } );
-                */
-
-                //scene.add( object );
-                scope.scene.add(object);
-
-
-            }, onProgress, onError );
-
-
-
+            );
 
         },
         event : {
@@ -128,6 +191,18 @@
                 });
             },
             onUpdate : function(event) {
+
+                if ( mixers.length > 0 ) {
+
+                    for ( var i = 0; i < mixers.length; i ++ ) {
+
+                        //mixers[ i ].update( clock.getDelta() );
+                        mixers[ i ].update(0.01  );
+
+                    }
+
+                }
+
 
                 this.updateAll();
             },
@@ -145,6 +220,11 @@
             }
         }
     });
+
+
+    function test() {
+
+    }
 
 </script>
 

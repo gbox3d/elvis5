@@ -29,9 +29,11 @@
 
 	THREE.FBXLoader.prototype.constructor = THREE.FBXLoader;
 
-	THREE.FBXLoader.prototype.load = function ( url, onLoad, onProgress, onError ) {
+	THREE.FBXLoader.prototype.load = function ( url, onLoad, onProgress, onError,postCallback ) {
 
 		var scope = this;
+
+        this.postCallback = postCallback;
 
 		var loader = new THREE.XHRLoader( scope.manager );
 		// loader.setCrossOrigin( this.crossOrigin );
@@ -114,6 +116,28 @@
 
 		console.time( 'FBXLoader: TextParser' );
 		var nodes = new FBXParser().parse( text );
+
+        //gbox3d fix start <<
+        //텍스춰 노드 정리
+        try {
+            var texture_node_root = nodes.Objects.subNodes.Texture;
+
+            console.log(texture_node_root);
+            if('id' in texture_node_root) {
+
+                console.log('single texture fix process')
+
+                var temp = texture_node_root;
+                texture_node_root = {};
+                texture_node_root[temp.id] = temp;
+                nodes.Objects.subNodes.Texture = texture_node_root;
+            }
+
+        }
+        catch(e) {
+            console.log(e)
+        }
+        //gbox3d fix end >>
 		console.timeEnd( 'FBXLoader: TextParser' );
 
 		console.time( 'FBXLoader: ObjectParser' );
@@ -266,6 +290,13 @@
 		geometry.bones = geo.bones;
 		geometry.skinIndices = this.weights.skinIndices;
 		geometry.skinWeights = this.weights.skinWeights;
+
+		//gbox3d add <<
+		if(this.postCallback) {
+			this.postCallback(geometry,material);
+		}
+		///////// >>
+
 
 		var mesh = null;
 		if ( geo.bones === undefined || geo.skins === undefined || this.animations === undefined || this.animations.length === 0 ) {
@@ -753,9 +784,11 @@
 			this.currentProp = [];
 			this.currentPropName = '';
 
+			var line_count = 0;
 			var split = text.split( "\n" );
 			for ( var line in split ) {
 
+				line_count++;
 				var l = split[ line ];
 
 				// short cut
@@ -782,9 +815,14 @@
 
 					} );
 
+					if(nodeName == 'Texture') {
+						console.log(nodeName + ':' + nodeAttrs + ',line count:' +line_count );
+					}
+
+
 					this.parseNodeBegin( l, nodeName, nodeAttrs || null );
 
-					console.log(nodeName + ':' + nodeAttrs);
+
 
 					continue;
 
@@ -2439,13 +2477,25 @@
 
 		var rawNodes = node.Objects.subNodes.Texture;
 
-		for ( var n in rawNodes ) {
+        for ( var n in rawNodes ) {
 
-			var tex = ( new Texture() ).parse( rawNodes[ n ], node );
-			this.add( tex );
+            var tex = ( new Texture() ).parse( rawNodes[ n ], node );
+            this.add( tex );
 
-		}
+        }
 
+        /*
+        //gbox3d fix 1 texture bug
+        ////////////////////////////////////////
+		if( 'id' in rawNodes) { //텍스춰노드가 1개만 존재할경우 또는 텍스춰노드 자신일경우
+            var tex = ( new Texture() ).parse( rawNodes, node );
+            this.add( tex );
+        }
+        else {
+
+        }
+        //////////////////////////////////
+        */
 		return this;
 
 	};
