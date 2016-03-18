@@ -121,7 +121,7 @@ elvis5
 ```
 
 * 창모드예제
-창모드에 필요한 DOM 선어
+창모드에 필요한 DOM 선언 
 ```html
 
 <div id='mycanvas' style="
