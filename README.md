@@ -12,7 +12,7 @@ elvis5
 <script src='core.js'></script>
 ```
 ### Example ###
-* 전체화면예제
+* 전체화면기본예제
 ```html
 <!DOCTYPE html>
 <html>
@@ -23,7 +23,7 @@ elvis5
 
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
     <style>
 
@@ -71,6 +71,19 @@ elvis5
             controls.target.set(0,0,0);
             controls.update();
 
+            //씬노드 추가
+            var geometry = new THREE.CubeGeometry(1,1,1);
+            var material = new THREE.MeshBasicMaterial(
+                    {
+                        color: 0x00ff00,
+                        wireframe : true
+
+                    }
+            );
+            var node = new THREE.Mesh(geometry, material);
+            node.name = 'wire_cube';
+            scope.scene.add(node);
+
         },
         event : {
             onWindowResize : function() {
@@ -105,6 +118,11 @@ elvis5
 
 </body>
 </html>
+```
+
+* 창모드예제
+```html
+
 ```
 
 
