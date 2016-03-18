@@ -150,6 +150,8 @@ var Smgr = new  esparty.elvis3d.scene.SceneManager({
             }
 
         },
+        ... 이하생략 ...
+});
 ```
 
 
