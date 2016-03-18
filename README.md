@@ -121,9 +121,38 @@ elvis5
 ```
 
 * 창모드예제
+창모드에 필요한 DOM 선어
 ```html
 
+<div id='mycanvas' style="
+    margin: auto;
+    width: 320px;height: 240px;" ></div>
+
 ```
+
+esparty.elvis3d.scene.SceneManager 를 초기화 시킬때 container 에 DOM객체를 넣어준다.
+
+```javascript
+var Smgr = new  esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(5, 10, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            container : document.querySelector('#mycanvas'),
+            clear : {
+                color : 0x000000
+            }
+
+        },
+```
+
+
 
 
 ### Change log ###
