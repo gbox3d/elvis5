@@ -7,7 +7,7 @@
 
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
     <style>
 
@@ -54,6 +54,19 @@
             var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
             controls.target.set(0,0,0);
             controls.update();
+
+            //씬노드 추가
+            var geometry = new THREE.CubeGeometry(1,1,1);
+            var material = new THREE.MeshBasicMaterial(
+                    {
+                        color: 0x00ff00,
+                        wireframe : true
+
+                    }
+            );
+            var node = new THREE.Mesh(geometry, material);
+            node.name = 'wire_cube';
+            scope.scene.add(node);
 
         },
         event : {

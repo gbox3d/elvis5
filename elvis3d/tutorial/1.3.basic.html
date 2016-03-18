@@ -7,17 +7,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
-
-
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
+
+    <style>
+
+        body {
+            margin: 0px; /* 화면 여백 제거   */
+            overflow: hidden /* 스크롤바 없애기  */
+        }
+
+    </style>
 
 </head>
-<body style="margin: 0px;" >
-
+<body>
 <script>
 
     var Smgr = new esparty.elvis3d.scene.SceneManager({
