@@ -1,16 +1,11 @@
 elvis5
 ========
 
-####  html5(webgl) based web-front-end application framework ####
+####  html5(webgl) based dynamic 3d web-front-end application framework ####
+
+랜더러는 three.js,물리엔진은 cannon.js, 애니메이션은tween.js 사용해서 구성한 프레임웍입니다.
 
 
-
-### Usage ###
-
-```html
-<script src='three.js'></script>
-<script src='core.js'></script>
-```
 ### Example ###
 * 전체화면기본예제
 ```html
