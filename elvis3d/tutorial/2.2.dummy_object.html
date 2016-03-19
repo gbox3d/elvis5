@@ -2,16 +2,15 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title> basic sample </title>
+    <title> dummy object </title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
-    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
-    <script src="../libs/ramb3d/core.js"></script>
-    <script src="../libs/ramb3d/util.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
+    <script src="../libs/elvis5/util.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -57,9 +56,8 @@
             node.scale.set(1,2,1);
             this.scene.add(node);
 
-            var dummy = ramb3d.util.createDummy({
-                position :new THREE.Vector3(0,0,0)
-            });
+            var dummy = new THREE.Group();
+            dummy.position.set(0,0,0);
             dummy.add(node); //자식노드로 추가됨
             this.scene.add(dummy);
 

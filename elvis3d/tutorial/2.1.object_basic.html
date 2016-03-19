@@ -13,8 +13,7 @@
 
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src='../libs/threejs/js/renderers/CSS3DRenderer.js'></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -40,6 +39,8 @@
         },
         setup : function() {
 
+            var scope = this;
+
             //3디오브잭트용 리소스 생성
             var geometry = new THREE.CubeGeometry(1,1,1);
             var material = new THREE.MeshBasicMaterial(
@@ -47,22 +48,30 @@
                         color: 0x00ff00
                     }
             );
-            var texture = THREE.ImageUtils.loadTexture( '../res/RTS_Crate.png');
-            texture.anisotropy = this.renderer.getMaxAnisotropy();
-            var material2 = new THREE.MeshBasicMaterial(
-                    {
-                        map : texture
-                    }
-            );
 
-            //메쉬오브잭트 만들기
-            var node = new THREE.Mesh(geometry, material);
-            this.scene.add(node);
+            var textureLoader = new THREE.TextureLoader();
 
-            var node = new THREE.Mesh(geometry, material2);
-            node.position.set(1,0,-1);
-            node.rotation.set(0,THREE.Math.degToRad(45),0);
-            this.scene.add(node);
+            textureLoader.load('../res/UV_Grid_Sm.jpg',function(texture) {
+                texture.anisotropy = scope.renderer.getMaxAnisotropy();
+                var material2 = new THREE.MeshBasicMaterial(
+                        {
+                            map : texture
+                        }
+                );
+
+                //메쉬오브잭트 만들기
+                var node = new THREE.Mesh(geometry, material);
+                scope.scene.add(node);
+
+                var node = new THREE.Mesh(geometry, material2);
+                node.position.set(1,0,-1);
+                node.rotation.set(0,THREE.Math.degToRad(45),0);
+                scope.scene.add(node);
+
+
+            })
+
+            //var texture = THREE.ImageUtils.loadTexture( '../res/UV_Grid_Sm.jpg');
 
 
             //카메라의 현재 위치 기준으로 시작한다.

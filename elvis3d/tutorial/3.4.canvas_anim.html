@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title> ttf font loader </title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
@@ -10,8 +10,7 @@
     <title>canvas texturing</title>
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/ramb3d/core.js"></script>
-
+    <script src="../libs/elvis5/core.js"></script>
     <script src="../libs/extra/opentype.min.js"></script>
 
 </head>
@@ -28,7 +27,7 @@
             fov : 45,
             far : 5000,
             near : 1,
-            position : new THREE.Vector3(0, 2, 5),
+            position : new THREE.Vector3(0, 2, 15),
             lookat : new THREE.Vector3()
 
         },
@@ -44,11 +43,12 @@
             var self = this;
 
             var canvas = document.createElement("canvas");
-            canvas.width = 1024;
+            canvas.width = 512;
             canvas.height = 128;
             var ctx = canvas.getContext("2d");
 
-            var texture = new THREE.Texture(canvas);
+            var texture = new THREE.Texture(canvas); //캔버스텍스춰링
+
             var material = new THREE.SpriteMaterial( { map: texture} );
             material.map.needsUpdate = true;
             var sprite = new THREE.Sprite( material );
@@ -60,7 +60,7 @@
             sprite.scale.set(1 * scale,ratio * scale)
             self.scene.add(sprite);
 
-            opentype.load('../res/font/digital.ttf', function(err, font) {
+            opentype.load('../res/font/digital-7/digital-7.ttf', function(err, font) {
                 if (err) {
                     alert('Font could not be loaded: ' + err);
                 } else {

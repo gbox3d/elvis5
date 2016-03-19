@@ -7,18 +7,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
-    <title> basic </title>
-
-    <!--<script src="../libs/backbone/underscore.js"></script>-->
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
+    <title> picking sample </title>
 
 
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
     <script src="../libs/threejs/js/controls/TransformControls.js"></script>
-    <script src='../libs/threejs/CSS3DRenderer.js'></script>
 
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 
 </head>
@@ -152,27 +148,18 @@
                 var intersects = this.raycaster.intersectObjects( this.root_dummy.children );
                 if ( intersects.length > 0 ) {
 
-                    console.log(intersects);
+                    if(this.select_node != intersects[ 0 ].object) {
+                        if(this.select_node) {
+                            this.select_node.material = this.select_node.origin_material;
 
-                    if(this.select_node) {
-                        this.select_node.material = this.select_node.origin_material;
+                        }
+                        intersects[ 0 ].object.origin_material = intersects[ 0 ].object.material;
+                        intersects[ 0 ].object.material = this.material_hit;
+                        this.trn_control.attach(intersects[ 0 ].object);
+
+                        this.select_node = intersects[ 0 ].object;
+
                     }
-
-                    console.log(this.raycaster);
-
-                    intersects[ 0 ].object.origin_material = intersects[ 0 ].object.material;
-                    intersects[ 0 ].object.material = this.material_hit;
-                    this.trn_control.attach(intersects[ 0 ].object);
-
-                    this.select_node = intersects[ 0 ].object;
-
-
-                    console.log(intersects.length)
-
-                }
-                else {
-
-                    //this.trn_control.detach();
 
                 }
 

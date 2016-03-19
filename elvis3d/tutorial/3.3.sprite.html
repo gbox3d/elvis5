@@ -7,7 +7,7 @@
 
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -36,7 +36,7 @@
             var self = this;
 
             var texloader = new THREE.TextureLoader();
-            texloader.load('../res/hell_chosun.jpg',function(texture) {
+            texloader.load('../res/sprite0.png',function(texture) {
 
                 var material = new THREE.SpriteMaterial( { map: texture.clone(), color: 0xffffff } );
                 material.map.needsUpdate = true;
@@ -49,16 +49,15 @@
                 sprite.scale.set(1 * scale,ratio * scale)
                 self.scene.add(sprite);
 
+                //텍스춰 일부만 잘라내기
                 var material = new THREE.SpriteMaterial( { map: texture.clone(), color: 0xffffff } );
                 material.map.offset.set(-0.5,-0.5);
-                material.map.repeat.set(2,2)
+                material.map.repeat.set(1,1)
                 material.map.needsUpdate = true;
                 var sprite = new THREE.Sprite( material );
 
                 var ratio = texture.image.height/texture.image.width;
                 var scale = 1.0;
-
-
                 sprite.position.set(2,0,0);
                 sprite.scale.set(1 * scale,ratio * scale)
                 self.scene.add(sprite);

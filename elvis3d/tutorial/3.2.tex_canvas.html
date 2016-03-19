@@ -9,12 +9,9 @@
 
     <title>canvas texturing</title>
 
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
-
     <script src='../libs/threejs/three.js'></script>
-    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -52,13 +49,9 @@
 
             var size = 48;
             var text ="hello canvas";
-            //var color = "black";
             var canvas = document.createElement("canvas");
-            //canvas.style.backgroundColor = 'none';
-            //var textWidth = context.measureText(text).width;
             canvas.width = 512;
             canvas.height = 128;
-            //console.log(' text width is ' +textWidth)
 
             var context = canvas.getContext("2d");
             context.font = size + "pt Arial";
@@ -68,7 +61,6 @@
             context.fillText(text, canvas.width / 2, canvas.height / 2);
             context.strokeStyle = "black";
 
-            // context.strokeRect(0, 0, canvas.width, canvas.height);
             var texture = new THREE.Texture(canvas);
             texture.needsUpdate = true;
             var material = new THREE.MeshBasicMaterial({
