@@ -40,7 +40,7 @@
         },
         setup : function() {
 
-            var self = this;
+            var scope = this;
 
             //그리드헬퍼
             var helper =  new THREE.GridHelper( 3, 1 );
@@ -51,7 +51,7 @@
             var text ="hello canvas";
             var canvas = document.createElement("canvas");
             canvas.width = 512;
-            canvas.height = 128;
+            canvas.height = 64;
 
             var context = canvas.getContext("2d");
             context.font = size + "pt Arial";
@@ -65,6 +65,7 @@
             texture.needsUpdate = true;
             var material = new THREE.MeshBasicMaterial({
                 map : texture,
+                //wireframe : true,
                 transparent : true //투명 컬러값 적용시킴
 
             });
@@ -74,8 +75,17 @@
             mesh.position.x = 0;
             mesh.position.y = 0;
             mesh.position.z = 0;
+            scope.scene.add(mesh);
 
-            self.scene.add(mesh);
+            //빌보드
+            var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width/50, canvas.height/50), material);
+            // mesh.overdraw = true;
+            mesh.doubleSided = true;
+            mesh.position.x = 0;
+            mesh.position.y = 2;
+            mesh.position.z = 0;
+            scope.scene.add(mesh);
+            scope.mesh_bill = mesh;
 
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera,this.renderer.domElement );
@@ -94,6 +104,10 @@
                 });
             },
             onUpdate : function(event) {
+                var scope = this;
+
+                scope.mesh_bill.quaternion.copy(scope.camera.quaternion)
+
                 this.updateAll();
             }
         }
