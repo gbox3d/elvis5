@@ -12,8 +12,8 @@
     <script src='../libs/jquery-2.0.3.min.js'></script>
 
     <script src='../libs/threejs/three.js'></script>
-    <script src='../libs/threejs/CSS3DRenderer.js'></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src="../libs/elvis5/core.js"></script>
 
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
 
@@ -60,7 +60,7 @@
 
             //씬노드 추가
             var geometry = new THREE.CubeGeometry(1,1,1);
-            var texture = THREE.ImageUtils.loadTexture( '../res/RTS_Crate.png');
+            var texture = THREE.ImageUtils.loadTexture( '../res/mil1.png');
             texture.anisotropy = this.renderer.getMaxAnisotropy();
 
             var material = new THREE.MeshBasicMaterial(

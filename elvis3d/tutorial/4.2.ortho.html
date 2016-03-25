@@ -13,7 +13,7 @@
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
     <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -85,23 +85,11 @@
                 var node  = this.wire_cube;
                 node.rotation.x += THREE.Math.degToRad(45) * event.deltaTick;
                 node.rotation.y += THREE.Math.degToRad(45) * event.deltaTick;
-
                 this.updateAll();
             },
             onMouseMove : function(event) {
-
                 var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
                 var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
-
-//                document.querySelector('#text-log .mouse-pos').innerText = mx.toFixed(2) + ',' + my.toFixed(2);
-                /*
-                 var vector = new THREE.Vector3( mx, my, 0.5 ).unproject( Smgr.camera );
-
-                 //위치변경은 position을 사용한다.
-                 node.position.set(vector.x,vector.y,vector.z);
-                 */
-
-                //console.log(vector);
             },
             onKeyDown : function(event) {
 

@@ -64,13 +64,6 @@
             var texture = new THREE.Texture(canvas);
             texture.needsUpdate = true;
 
-            /*var material = new THREE.MeshBasicMaterial({
-                map : texture,
-                //wireframe : true,
-                transparent : true //투명 컬러값 적용시킴
-
-            });*/
-
             var material = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
             material.map.needsUpdate = true;
             var sprite = new THREE.Sprite( material );
