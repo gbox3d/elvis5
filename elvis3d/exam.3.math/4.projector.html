@@ -16,6 +16,7 @@
     <script src="../libs/elvis5/core.js"></script>
 
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../libs/threejs/js/renderers/Projector.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -94,10 +95,10 @@
                 var mx = ( event.clientX / window.innerWidth ) * 2 - 1;
                 var my = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-                var vector = new THREE.Vector3();
-                var projector = new THREE.Projector();
-                projector.projectVector( vector.setFromMatrixPosition( this.plane_node.matrixWorld ), this.camera );
 
+                var vector = new THREE.Vector3();
+                vector.setFromMatrixPosition( this.plane_node.matrixWorld ) //3디좌표를 카메라기준으로 프로잭션해서 2디 좌표를 구한다
+                vector.project(this.camera)
 
                 vector.x = ( vector.x * (window.innerWidth/2) ) + (window.innerWidth/2);
                 vector.y = - ( vector.y * (window.innerHeight/2) ) + (window.innerHeight/2);
