@@ -683,7 +683,10 @@ esparty.elvis3d.util.billboard.prototype.draw = function (text) {
 
 }
 
-esparty.elvis3d.util.billboardMng = function () {
+esparty.elvis3d.util.billboardMng = function (option) {
+
+    var camera = option.camera;
+    var raycaster = new THREE.Raycaster();
 
     var billboard_list = [];
 
@@ -691,28 +694,31 @@ esparty.elvis3d.util.billboardMng = function () {
         billboard_list.push(billboard)
 
     }
-    this.apply = function (camera) {
+    this.apply = function () {
         for(var i=0;i<billboard_list.length;i++) {
-            billboard_list[i].quaternion.copy(camera.quaternion)
+            billboard_list[i].object.quaternion.copy(camera.quaternion)
         }
 
     }
 
-    this.picking = function (raycaster) {
-        var intersects = raycaster.intersectObjects(billboard_list  );
+    this.picking = function (mx,my) {
 
-        if ( intersects.length > 0 ) {
+        //2차원좌표를 3차원 점으로 만들기
+        var vector = new THREE.Vector3( mx, my, 0.5 ).unproject( camera );
 
-            console.log(intersects[ 0 ].object.name);
-            intersects[ 0 ].object.OnCallback();
-            //intersects[ 0 ].object.material = material_hit;
+        //픽킹광선 만들기
+        raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 
-            //console.log(intersects.length)
+        for(var i=0;i<billboard_list.length;i++) {
+            var intersects = raycaster.intersectObject(billboard_list[i].object  );
+            if ( intersects.length > 0 ) {
+                console.log(intersects[ 0 ].object.name);
+                intersects[ 0 ].object.OnCallback();
+
+            }
 
         }
-        else {
 
-        }
 
     }
 
