@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>texture basic</title>
+    <script src='../libs/threejs/three.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
+
+</head>
+<body style="margin: 0px;overflow: hidden;" >
+
+
+<script>
+
+    //매니져 생성
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(2, 5, 5),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 0.5 //반투명칠하기
+            }
+        },
+        setup : function() {
+
+            var self = this;
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 3, 1 );
+            helper.setColors(0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            var textureLoader = new THREE.TextureLoader();
+
+            textureLoader.load( '../res/T34_strip2.png',
+                    function(texture) { //success
+                        //투명컬러값 적용하지 않음.
+                        var geometry = new THREE.PlaneGeometry(1,1);
+                        texture.anisotropy = this.renderer.getMaxAnisotropy();
+                        var material = new THREE.MeshBasicMaterial(
+                                {
+                                    map : texture
+                                }
+                        );
+                        var node = new THREE.Mesh(geometry, material);
+                        node.name = 'test cube';
+                        this.scene.add(node);
+
+                        //투명컬러값적용된 텍스춰적용
+                        var geometry = new THREE.PlaneGeometry(1,1);
+                        texture.anisotropy = this.renderer.getMaxAnisotropy();
+                        var material = new THREE.MeshBasicMaterial(
+                                {
+                                    map : texture,
+                                    transparent : true //투명 컬러값 적용시킴
+                                }
+                        );
+                        var node = new THREE.Mesh(geometry, material);
+                        node.position.x=1;
+                        this.scene.add(node);
+
+                    }.bind(this),
+                    function(xhr) { //progress
+                        console.log(xhr)
+
+                    },
+                    function(xhr) { //error
+
+                    }
+            );
+
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera,this.renderer.domElement );
+            controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+                this.updateAll();
+            }
+        }
+    });
+
+
+
+</script>
+
+</body>
+</html>

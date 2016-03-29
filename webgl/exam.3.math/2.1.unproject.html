@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <title>2d -> 3d</title>
+
+    <script src='../libs/jquery-2.0.3.min.js'></script>
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src='../libs/threejs/CSS3DRenderer.js'></script>
+    <script src="../libs/ramb3d/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+    var Smgr = new ramb3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 0, 20),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+
+        },
+        event : {
+            onWindowResize : function(evt) {
+
+                Smgr.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onMouseMove : function(event) {
+
+                var mx = ( event.clientX / window.innerWidth ) * 2 - 1;
+                var my = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+
+                var vector = new THREE.Vector3( mx, my, 0.5 ).unproject( Smgr.camera );
+
+                node.position.set(vector.x,vector.y,vector.z);
+
+                //console.log(vector);
+            },
+            onUpdate : function(event) {
+
+                Smgr.updateAll();
+
+            }
+        }
+    });
+
+    //씬노드 추가
+    var geometry = new THREE.CubeGeometry(1,1,1);
+    var material = new THREE.MeshBasicMaterial(
+            {
+                color: 0x00ff00,
+                wireframe : true
+
+            }
+    );
+
+    var node = new THREE.Mesh(geometry, material);
+    Smgr.scene.add(node);
+
+
+</script>
+
+</body>
+</html>
