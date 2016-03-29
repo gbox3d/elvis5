@@ -137,46 +137,7 @@ ramb3d.scene.SceneManager = function(param) {
 
     this.camera.position.copy( param.camera.position  );
     this.camera.lookAt( param.camera.lookat );
-
-
-
-    /*
-    if(param.camera_type == 'ortho') {
-        if(param.camera == undefined) {
-            param.camera = {};
-
-            param.camera.near = 150;
-            param.camera.far = 1000;
-            param.camera.position = new THREE.Vector3(0,0,700);
-            param.camera.lookat = new THREE.Vector3();
-        }
-        this.camera = new THREE.OrthographicCamera(
-            0.5 * this.window_size.width / - 2, 0.5 * this.window_size.width / 2,
-            this.window_size.height / 2, this.window_size.height / - 2,
-            param.camera.near, param.camera.far
-        );
-        this.camera.position.copy( param.camera.position  );
-        this.camera.lookAt( param.camera.lookat );
-    }
-    else {
-        //카메라 생성
-        if(param.camera == undefined) {
-            param.camera = {};
-
-            param.camera.fov = 45;
-            param.camera.near = 1;
-            param.camera.far = 5000;
-            param.camera.position = new THREE.Vector3(0,0,700);
-            param.camera.lookat = new THREE.Vector3();
-        }
-        this.camera = new THREE.PerspectiveCamera( param.camera.fov, this.window_size.width / this.window_size.height, param.camera.near, param.camera.far );
-        this.camera.position.copy( param.camera.position  );
-        this.camera.lookAt( param.camera.lookat );
-
-    }
-    */
-
-
+    this.camera.target = param.camera.lookat;
 
 
     //씬 생성객체

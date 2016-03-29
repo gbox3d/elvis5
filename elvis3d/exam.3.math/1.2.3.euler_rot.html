@@ -9,15 +9,16 @@
 
     <title> basic </title>
 
-    <script src="../libs/backbone/underscore.js"></script>
-    <script src='../libs/jquery-2.0.3.min.js'></script>
+    <!--<script src="../libs/backbone/underscore.js"></script>-->
+    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
 
 
     <script src='../libs/threejs/three.js'></script>
-    <script src='../libs/threejs/CSS3DRenderer.js'></script>
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src="../libs/elvis5/core.js"></script>
 
-    <script src="js/controls/OrbitControls.js"></script>
+
 
 </head>
 <body style="margin: 0px;" >
@@ -79,6 +80,7 @@
                     3 //면갯수
             );
             geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler( new THREE.Euler( THREE.Math.degToRad(-90) ,  0, 0 ) ) );
+            geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0,0,-1 )  );
 
             this.object = {};
 
@@ -90,6 +92,11 @@
             this.scene.add(mesh);
 
             this.object.arm1 = mesh;
+
+            //this.angle = new THREE.Euler(0,0,0,'XYZ')
+
+            //y축 고정 회전
+            this.object.arm1.rotation.reorder('YXZ')
 
 
             //카메라의 현재 위치 기준으로 시작한다.
@@ -127,25 +134,33 @@
 
                 var front_vect = new THREE.Vector3(0,0,1);
 
-                var quat = new THREE.Quaternion();
-                quat.setFromEuler(new THREE.Euler( 0, THREE.Math.degToRad(10),0, 'XYZ' ));
+
 
                 switch(event.keyCode) {
                     case 65: //A
                         //쿼터니온으로 회전 시키기
-                        this.object.arm1.quaternion.multiply(quat);
+                        this.object.arm1.rotation.y += THREE.Math.degToRad(5);
                         break;
                     case 68: //D
-
-                            //역을 곱하면 반데로 회전한다.
-                        this.object.arm1.quaternion.multiply(quat.clone().inverse());
+                        //역을 곱하면 반데로 회전한다.
+                        this.object.arm1.rotation.y -= THREE.Math.degToRad(5);
 
                         break;
                     case 87: //W
-                        this.object.arm1.translateOnAxis(front_vect,-1.0);
+                        this.object.arm1.rotation.x += THREE.Math.degToRad(5);
+                        //this.object.arm1.quaternion.multiply(quat_x);
                         break;
                     case 83://S
-                        this.object.arm1.translateOnAxis(front_vect,1.0);
+                        this.object.arm1.rotation.x -= THREE.Math.degToRad(5);
+                        //this.object.arm1.quaternion.multiply(quat_x.clone().inverse());
+                        break;
+                    case 81:
+                        this.object.arm1.rotation.z += THREE.Math.degToRad(5);
+                        //this.object.arm1.quaternion.multiply(quat_z);
+                        break;
+                    case 69:
+                        this.object.arm1.rotation.z -= THREE.Math.degToRad(5);
+                        //this.object.arm1.quaternion.multiply(quat_z.clone().inverse());
                         break;
                 }
             },

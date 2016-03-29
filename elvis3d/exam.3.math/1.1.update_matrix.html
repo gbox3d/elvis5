@@ -16,7 +16,7 @@
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
 
 
-    <script src="../libs/ramb3d/core.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -90,6 +90,7 @@
 
 
 
+
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera );
             controls.target.set(0,0,0) ;//= new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
@@ -126,6 +127,36 @@
                 console.log(event);
 
                 switch (event.keyCode) {
+                    case 81:
+
+                        var m = new THREE.Matrix4();
+
+                        m.makeRotationY( THREE.Math.degToRad(10) );
+
+
+                        this.object.arm1.matrix.multiply(m)
+
+                        this.object.arm1.matrix.decompose(
+                                this.object.arm1.position,
+                                this.object.arm1.quaternion,
+                                this.object.arm1.scale
+                        );
+
+                        break;
+                    case 87:
+                        var m = new THREE.Matrix4();
+
+                        m.makeRotationX( THREE.Math.degToRad(10) );
+
+
+                        this.object.arm1.matrix.multiply(m)
+
+                        this.object.arm1.matrix.decompose(
+                                this.object.arm1.position,
+                                this.object.arm1.quaternion,
+                                this.object.arm1.scale
+                        );
+                        break;
                     case 65: //A
                             /*
                             업데이트가 일어나면 기본적으로 position,rotation,scale 값을 가지고 메트릭스를 재설정하므로
