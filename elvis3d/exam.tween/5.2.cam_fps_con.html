@@ -78,10 +78,24 @@
 
             var m = new THREE.Matrix4();
 
+            /*
+            원래는 xyz 오더 이므로 x축이 고정되는 회전이 만들어진다.
+            일반적인 사람의 시야기준은 y가 고정이므로 yxz오더에 따르면 fps식의 카메라 액션을 구현할수있다.
+             처음에 오는 축이 항상 월드 축에 고정된다.
+             */
             scope.camera.rotation.reorder('YXZ');
 
-            scope.startCam = function (angle) {
-                scope.camera.rotation.y = THREE.Math.degToRad(angle)
+            scope.startCam = function (angle_x,angle_y) {
+                //scope.camera.rotation.y = THREE.Math.degToRad(angle)
+
+                new TWEEN.Tween(Smgr.camera.rotation)
+                        .to({x:THREE.Math.degToRad(angle_x),y:THREE.Math.degToRad(angle_y)},3000)
+//                        .onUpdate(function () {
+//                            console.log(this)
+//                            //Smgr.camera.lookAt(this)
+//                        })
+                        .easing( TWEEN.Easing.Exponential.InOut )
+                        .start();
 
 
             }
