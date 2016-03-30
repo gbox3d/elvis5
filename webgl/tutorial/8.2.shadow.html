@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>shadow sample</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+</head>
+<body>
+
+
+<script src="../libs/threejs/three.js"></script>
+
+<script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+<script src="../libs/threejs/js/controls/TransformControls.js"></script>
+<!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+<script src="../libs/elvis5/core.js"></script>
+
+
+<script>
+
+
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0,5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl'
+        },
+        setup : function() {
+
+            this.renderer.gammaInput = true;
+            this.renderer.gammaOutput = true;
+
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.cullFace = THREE.CullFaceBack;
+
+            //3디오브잭트용 리소스 생성
+            var cube_geometry = new THREE.CubeGeometry(1,1,1);
+            var cube_material = new THREE.MeshPhongMaterial(
+                    { ambient: 0x999999, color: 0x00ff00, specular: 0x101010
+                        //,wireframe : true
+                    } );
+
+            // Ground
+            var plane = new THREE.Mesh(
+                    new THREE.PlaneGeometry( 4, 4 ),
+                    new THREE.MeshPhongMaterial(
+                            { ambient: 0x999999, color: 0xff0000, specular: 0x101010
+                                //,wireframe : true
+                            } ) );
+            plane.rotation.x = THREE.Math.degToRad(-90);
+            plane.position.y = 0;
+            this.scene.add( plane );
+
+            //그림자 받기
+            plane.receiveShadow = true;
+
+            //object
+            var cube = new THREE.Mesh(
+                    cube_geometry,cube_material
+            );
+            cube.position.set(0,0.5,0);
+            //그림자보내기
+            cube.castShadow = true;
+            this.scene.add(cube);
+
+
+
+            //샤도우 라이트
+            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.35 );
+            directionalLight.position.set( 2, 2, 2 )
+            this.scene.add( directionalLight );
+
+            directionalLight.castShadow = true;
+
+            //directionalLight.shadowCameraVisible = true;
+
+            var d = 1;
+            directionalLight.shadowCameraLeft = -d;
+            directionalLight.shadowCameraRight = d;
+            directionalLight.shadowCameraTop = d;
+            directionalLight.shadowCameraBottom = -d;
+
+            directionalLight.shadowCameraNear = 1;
+            directionalLight.shadowCameraFar = 5;
+
+            directionalLight.shadowMapWidth = 256;
+            directionalLight.shadowMapHeight = 256;
+
+            this.shadow_light = directionalLight;
+
+            directionalLight.shadowCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+            this.scene.add(directionalLight.shadowCameraHelper);
+
+
+
+            //광역 주변광
+            var ambient = new THREE.AmbientLight( 0x222222 );
+            this.scene.add( ambient );
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 );
+            helper.setColors(0x00ff00,0xffff00);
+            this.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+            //트랜스폼 컨트롤러
+            this.trn_control = new THREE.TransformControls( this.camera, this.renderer.domElement );
+            this.trn_control.attach(directionalLight);
+            this.scene.add(this.trn_control);
+
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                this.updateAll();
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+                switch(event.keyCode) {
+                    case 81: // Q
+                        this.trn_control.detach();
+                        break;
+                    case 87: // W
+                        this.trn_control.attach(this.shadow_light);
+                        break;
+
+                }
+
+
+
+            },
+            onMouseDown : function(event) {
+
+                var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+
+
+
+            }
+        }
+
+    });
+
+
+
+</script>
+</body>
+</html>
