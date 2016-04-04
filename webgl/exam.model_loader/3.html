@@ -10,8 +10,7 @@
 
     <script src="./FBXLoader.js"></script>
 
-    <script src="../libs/ramb3d/core.js"></script>
-
+    <script src="../libs/elvis5/core.js"></script>
 
 
 </head>
@@ -55,7 +54,7 @@
 
             //var texture = THREE.ImageUtils.loadTexture( './fbx/zomb-f_01.jpg');
             var textureLoader = new THREE.TextureLoader();
-            var texture = textureLoader.load( './fbx/zomb-f_01.jpg')
+            var texture = textureLoader.load( './fbx/target_blue.png')
 
 
             // model
@@ -81,7 +80,7 @@
             };
 
             var loader = new THREE.FBXLoader( manager );
-            loader.load( './fbx/female_zomb_v1.FBX', function( object ) {
+            loader.load( './fbx/Taeget_asci.fbx', function( object ) {
 
                 object.children[0].material.map = texture;
                 object.children[0].material.color.setRGB(1,1,1);
