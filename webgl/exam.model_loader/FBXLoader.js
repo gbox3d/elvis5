@@ -230,7 +230,7 @@
 		geo = ( new Geometry() ).parse( node );
 		geo.addBones( this.hierarchy.hierarchy );
 
-		//*
+		//
 		var geometry = new THREE.BufferGeometry();
 		geometry.name = geo.name;
 		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( geo.vertices ), 3 ) );
