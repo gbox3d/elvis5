@@ -159,9 +159,9 @@
 
                 track_info = trackInfo;
 
-                console.log('test');
-				new Timeliner(
-						new THREE.TimelinerController( scene, trackInfo, render ) );
+                var time_line_control = new THREE.TimelinerController( scene, trackInfo, render )
+                console.log(time_line_control);
+				new Timeliner( time_line_control );
 
 			}
 
