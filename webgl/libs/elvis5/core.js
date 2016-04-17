@@ -278,9 +278,10 @@ ramb3d.scene.SceneManager = function(param) {
 
         if(param.event.onUpdatePhysics) {
 
+            //todo...
+            //setTimer로 수정할예정
             //var _onPhysics = param.event.onUpdatePhysics.bind(THAT);
-
-            setInterval(param.event.onUpdatePhysics.bind(THAT),1000/60);
+            //setInterval(param.event.onUpdatePhysics.bind(THAT),1000/60);
 
 
         }
