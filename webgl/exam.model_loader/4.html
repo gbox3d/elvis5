@@ -5,6 +5,7 @@
     <title>fbx 예제 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
+    <script src="../libs/extra/async.js" ></script>
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
 
@@ -27,7 +28,7 @@
             fov : 45,
             far : 5000,
             near : 1,
-            position : new THREE.Vector3(0, 2.5, -3),
+            position : new THREE.Vector3(0, 2.5, 3),
             lookat : new THREE.Vector3()
 
         },
@@ -54,9 +55,7 @@
             controls.target.set(0,0,0);
             controls.update();
 
-            //texture
-            var textureLoader = new THREE.TextureLoader();
-            var texture = textureLoader.load( './fbx/4.png')
+
 
             // model
             var manager = new THREE.LoadingManager();
@@ -80,31 +79,83 @@
             var onError = function( xhr ) {
             };
 
+
             //var mixers = [];
             var loader = new THREE.FBXLoader( manager );
-            //
-            loader.load( './fbx/4.FBX',
-                    function( object ) {
-                        //scene.add( object );
-                        //scope.scene.add(object);
-                    }, onProgress, onError,
-                    function(geometry,matrial) {
-                        console.log(geometry)
 
-                        geometry.rotateX( THREE.Math.degToRad(-90));
-                        geometry.computeBoundingBox();
-                        geometry.computeVertexNormals();
+            async.waterfall([
+                    function (next) {
+                        loader.load( './fbx/4.FBX',
+                                function( object ) {
+                                    //scene.add( object );
+                                    //scope.scene.add(object);
+                                }, onProgress, onError,
+                                function(geometry,matrial) {
+                                    console.log(geometry)
 
-                        var object = new THREE.Mesh(geometry,
-                                new THREE.MeshBasicMaterial({
-                                    map : texture
-                                })
-                        )
+                                    //texture
+                                    var textureLoader = new THREE.TextureLoader();
+                                    var texture = textureLoader.load( './fbx/4.png')
 
-                        scope.scene.add(object);
+                                    geometry.rotateX( THREE.Math.degToRad(-90));
+                                    geometry.computeBoundingBox();
+                                    geometry.computeVertexNormals();
+
+                                    var object = new THREE.Mesh(geometry,
+                                            new THREE.MeshBasicMaterial({
+                                                map : texture
+                                            })
+                                    )
+
+                                    scope.scene.add(object);
+                                    next(null)
+
+                                }
+                        );
+
+                    },
+                    function (next) {
+
+                        loader.load( './fbx/target_asci.fbx',
+                                function( object ) {
+                                    //scene.add( object );
+                                    //scope.scene.add(object);
+                                }, onProgress, onError,
+                                function(geometry,matrial) {
+                                    console.log(geometry)
+
+                                    //texture
+                                    var textureLoader = new THREE.TextureLoader();
+                                    var texture = textureLoader.load( './fbx/target_blue.png')
+
+                                    geometry.scale(0.1,0.1,0.1);
+                                    geometry.rotateX( THREE.Math.degToRad(-90));
+                                    geometry.computeBoundingBox();
+                                    geometry.computeVertexNormals();
+
+                                    var object = new THREE.Mesh(geometry,
+                                            new THREE.MeshBasicMaterial({
+                                                map : texture
+                                            })
+                                    )
+
+                                    object.position.set(2,0,0);
+                                    scope.scene.add(object);
+                                    next(null)
+
+                                }
+                        );
+
 
                     }
-            );
+            ])
+            //
+
+
+
+
+
+
 
         },
         event : {

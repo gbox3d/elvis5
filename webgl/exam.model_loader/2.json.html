@@ -5,14 +5,12 @@
     <title>전체화면 예제 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
+    <script src="../libs/extra/async.js" ></script>
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <!--<script src="../libs/threejs/plugin/JSONLoader.js"></script>-->
-
-
-
     <script src="../libs/elvis5/core.js"></script>
 
+    <script src="./FBXLoader.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -51,24 +49,6 @@
             controls.target.set(0,0,0);
             controls.update();
 
-
-
-            //var texture = THREE.ImageUtils.loadTexture( './fbx/zomb-f_01.jpg');
-            var textureLoader = new THREE.TextureLoader();
-            var texture = textureLoader.load( './fbx/target_blue.png',
-                    function () { //on Loaded
-
-                    },
-                    function () {
-
-                    },
-                    function () {
-
-                    }
-
-            )
-
-
             // model
             var manager = new THREE.LoadingManager();
             manager.onProgress = function( item, loaded, total ) {
@@ -91,44 +71,122 @@
             var onError = function( xhr ) {
             };
 
-            var loader = new THREE.JSONLoader(manager);
-            loader.load( './fbx/target.json', function ( geometry, materials ) {
+            var textureLoader = new THREE.TextureLoader();
+            var texture = textureLoader.load( './fbx/target_blue.png',
+                    function () { //on Loaded
 
-                console.log(geometry);
+                    },
+                    function () {
 
-                geometry.scale(3,3,3);
-                geometry.computeBoundingBox();
-                geometry.computeVertexNormals();
+                    },
+                    function () {
 
-                var material = new THREE.MeshBasicMaterial({
-                    map : texture
-                })
+                    }
 
-                var mesh = new THREE.Mesh(geometry,material);
-                scope.scene.add(mesh)
+            )
+
+            var uvs = [];
+
+            async.waterfall([
+                    function (next) {
+
+                        //json 모델 로더 생성 , json로더는 엔진에 기본 내장되어있다
+                        var loader = new THREE.JSONLoader(manager);
+                        loader.load( './fbx/target.json', function ( geometry, materials ) {
+
+                            //console.log(geometry.faceVertexUvs[0]);
+
+                            geometry.scale(3,3,3);
+                            geometry.computeBoundingBox();
+                            geometry.computeVertexNormals();
+
+                            uvs[0] = geometry.faceVertexUvs[0];
+
+                            //메트리얼 정보가 없으므로 직접 만들어준다.
+                            var material = new THREE.MeshBasicMaterial({
+                                map : texture
+                            })
+
+                            var mesh = new THREE.Mesh(geometry,material);
+                            scope.scene.add(mesh)
+                            next(null)
+
+                        });
+
+
+                    },
+                    function (next) {
+                        var loader = new THREE.FBXLoader( manager );
+                        loader.load( './fbx/Target_asci.fbx',
+                                function( object ) {
+                                    //scene.add( object );
+                                    //scope.scene.add(object);
+                                }, onProgress, onError,
+                                function(geometry,matrial) {
+                                    console.log(geometry)
+
+                                    //texture
+                                    //var textureLoader = new THREE.TextureLoader();
+                                    //var texture = textureLoader.load( './fbx/.jpg')
+                                    //var texture = textureLoader.load( './fbx/UV_Grid_Sm.jpg')
+
+                                    geometry.scale(0.1,0.1,0.1);
+                                    geometry.rotateX( THREE.Math.degToRad(-90));
+                                    geometry.computeBoundingBox();
+                                    geometry.computeVertexNormals();
+
+                                    uvs[1] = geometry.faceVertexUvs[0];
+
+                                    var object = new THREE.Mesh(geometry,
+                                            new THREE.MeshBasicMaterial({
+                                                map : texture
+                                            })
+                                    )
+
+                                    object.position.set(2,0,0);
+                                    scope.scene.add(object);
+                                    next(null)
+
+                                }
+                        );
+
+
+                    }
+
+            ],
+            function (err, result) {
+
+                console.log('complete!')
+
+                /*for(var i=0; i < uvs[0].length;i++) {
+
+                    var face_uv1 = (uvs[0])[i];
+                    var face_uv2 = (uvs[1])[i];
+
+                    //console.log((face_uv1[0].x - face_uv2[0].x).toFixed(2) + ',' + (face_uv1[0].y - face_uv2[0].y).toFixed(2));
+
+                    if( Math.abs(face_uv1[0].x.toFixed(2) - face_uv2[0].x.toFixed(2) ) > 0.01 ||
+                            Math.abs(face_uv1[1].x.toFixed(2) - face_uv2[1].x.toFixed(2) ) > 0.01 ||
+                            Math.abs(face_uv1[2].x.toFixed(2) - face_uv2[2].x.toFixed(2) ) > 0.01
+                    ) {
+                        console.log( i + ':' + face_uv1[0].x.toFixed(2) + ',' + face_uv2[0].x.toFixed(2) );
+
+                        console.log(face_uv1[0])
+                        console.log(face_uv1[1])
+                        console.log(face_uv1[2])
+
+                        console.log(face_uv2[0])
+                        console.log(face_uv2[1])
+                        console.log(face_uv2[2])
+
+                    }
+
+                }
+                */
+
 
 
             })
-
-
-
-
-//            var loader = new THREE.FBXLoader( manager );
-//            loader.load( './fbx/Taeget_asci.fbx', function( object ) {
-//
-//                object.children[0].material.map = texture;
-//                object.children[0].material.color.setRGB(1,1,1);
-//                console.log(object.children[0].material)
-//
-//
-//                object.rotation.x = THREE.Math.degToRad(-90);
-//                object.position.y = 1;
-//
-//                scope.scene.add(object);
-//
-//
-//            }, onProgress, onError );
-
 
 
 
@@ -144,15 +202,12 @@
                 });
             },
             onUpdate : function(event) {
-
-
                 this.updateAll();
             },
             onMouseDown : function(event) {
 
             },
             onMouseMove : function(event) {
-
                 //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
                 //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
 
