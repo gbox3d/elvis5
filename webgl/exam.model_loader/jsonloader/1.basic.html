@@ -5,10 +5,11 @@
     <title>전체화면 예제 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
-    <script src="../libs/extra/async.js" ></script>
-    <script src='../libs/threejs/three.js'></script>
-    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/elvis5/core.js"></script>
+    <script src="../../libs/extra/async.js" ></script>
+    <script src='../../libs/threejs/three.js'></script>
+    <script src="../../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../../libs/elvis5/core.js"></script>
+    <script src="../../libs/elvis5/assetManager.js"></script>
 
 
 </head>
@@ -17,12 +18,12 @@
 <script>
 
     /*
-    블랜더용 json익스포터 사용 예제
+     블랜더용 json익스포터 사용 예제
      */
 
     function SetupAsset(callback,res_table) {
 
-        var assetPath = './inn/';
+        var assetPath = './ground/';
 
         var total_count = 0;
         for(var key in res_table) {
@@ -107,89 +108,76 @@
             controls.target.set(0,0,0);
             controls.update();
 
-            // model
-            var manager = new THREE.LoadingManager();
-            manager.onProgress = function( item, loaded, total ) {
+            esparty.elvis3d.assetManager.SetupAsset({
+                resTable :  [
+                    {
+                        file : 'body.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
 
-                console.log( item, loaded, total );
-
-            };
-
-            var onProgress = function( xhr ) {
-
-                if ( xhr.lengthComputable ) {
-
-                    var percentComplete = xhr.loaded / xhr.total * 100;
-                    console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
-
-                }
-
-            };
-
-            var onError = function( xhr ) {
-            };
-
-
-            //
-            async.waterfall([
-                        function (next) {
-                            SetupAsset(
-                                    //로딩완료 콜백
-                                    function (evt) {
-                                        console.log(evt);
-                                        scope.resTable = evt.res_table;
-                                        next();
-
-                                    },
-                                    //res table 정의
-                                    {
-                                        '_Brick_A.jpg' : {
-                                            option : {
-                                                wrapS : THREE.RepeatWrapping,
-                                                wrapT : THREE.RepeatWrapping
-                                            }
-                                        },
-                                        'Roofin04.jpg' : {
-                                            option : {
-                                                wrapS : THREE.RepeatWrapping,
-                                                wrapT : THREE.RepeatWrapping
-                                            }
-                                        }
-                                    });
-
-                        }
-
-                    ],
-                    function (err, result) {
-
-                        /*
-                         페이스(삼각형)별로 메트리얼을 달리하여 랜더링하는 기능을 지원한다.
-                         face에는 메트리얼 배열의 인덱스를 가지고있다.
-                         */
-
-                        var loader = new THREE.JSONLoader(manager);
-                        loader.load( './inn/in01.json', function ( geometry, materials ) {
-                            for(var i =0; i < materials.length ; i++) {
-                                //디뷰즈멥을 익스포터의 문제로 라이트멥으로빠진다.
-                                if(materials[i].lightMap) {
-                                    materials[i].lightMap = null; //라이트멥 취소
-                                }
-                                if(scope.resTable[  materials[i].name + '.jpg' ]) {
-                                    console.log(i + ',' + materials[i].name )
-                                    console.log( scope.resTable[  materials[i].name + '.jpg' ] );
-
-                                    materials[i].map = scope.resTable[  materials[i].name + '.jpg' ].texture;
-                                }
-                                materials[i].side = THREE.DoubleSide; //더블싸이드
-                            }
                             console.log(materials)
                             console.log(geometry);
 
-                            var zmesh = new THREE.Mesh( geometry, new THREE.MultiMaterial( materials ) );
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ));
+                            zmesh.scale.set(10,10,10);
                             scope.scene.add(zmesh);
-                        });
 
-                    });
+
+                        }
+                    },
+                    {
+                        file : 'head.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
+
+                            console.log(materials)
+                            console.log(geometry);
+
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ) );
+                            zmesh.scale.set(10,10,10);
+                            zmesh.position.set(0,3,0);
+
+                            scope.scene.add(zmesh);
+
+
+                        }
+                    },
+                    {
+                        file : 'low.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
+
+                            console.log(materials)
+                            console.log(geometry);
+
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ) );
+                            zmesh.scale.set(10,10,10);
+                            zmesh.position.set(0,-3,0);
+                            scope.scene.add(zmesh);
+
+
+                        }
+                    }
+                ],
+                callback : function (evt) {
+                    console.log('asset load complete')
+                    console.log(evt);
+                },
+                assetPath : './bullet/'
+            })
+
 
             //방향광
             var directionalLight = new THREE.DirectionalLight( 0xffffff );
@@ -215,9 +203,6 @@
 
             },
             onMouseMove : function(event) {
-                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
-                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
-
             },
             onKeyDown : function(event) {
                 //console.log(event);

@@ -5,10 +5,12 @@
     <title>전체화면 예제 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
-    <script src="../libs/extra/async.js" ></script>
-    <script src='../libs/threejs/three.js'></script>
-    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-    <script src="../libs/elvis5/core.js"></script>
+    <script src="../../libs/extra/async.js" ></script>
+    <script src='../../libs/threejs/three.js'></script>
+    <script src="../../libs/threejs/js/controls/OrbitControls.js"></script>
+
+    <script src="../../libs/elvis5/core.js"></script>
+    <script src="../../libs/elvis5/assetManager.js"></script>
 
 
 </head>
@@ -19,60 +21,6 @@
     /*
      블랜더용 json익스포터 사용 예제
      */
-
-    function SetupAsset(callback,res_table) {
-
-        var assetPath = './ground/';
-
-        var total_count = 0;
-        for(var key in res_table) {
-            total_count++;
-        }
-        var load_count = 0;
-        var loader_texture = new THREE.TextureLoader();
-
-        for(var key in res_table) {
-
-            (function () {
-                var _key = key;
-                var __key = assetPath + key;
-
-                var loader = loader_texture;
-
-                loader.load(
-                        __key,
-                        function (texture) {
-                            console.log('load success..' + __key);
-                            if(res_table[_key].option) {
-                                if(res_table[_key].option.wrapS) {
-                                    texture.wrapS = res_table[_key].option.wrapS
-                                }
-                                if(res_table[_key].option.wrapT) {
-                                    texture.wrapT = res_table[_key].option.wrapT
-                                }
-                            }
-
-                            res_table[_key].texture = texture;
-                            load_count++
-                            if(total_count <= load_count) {
-                                callback({event : 'onload', res_table : res_table});
-                            }
-                        },
-                        function (xhr) {
-                            console.log(  _key + ', '  +(xhr.loaded / xhr.total * 100) + '% loaded' );
-
-                        },
-                        function (xhr) {
-                            console.log( _key + ', '  + 'An error happened' );
-                            callback({event : 'onerror'});
-                        }
-                );
-                //----------
-            })();
-            //--------------
-        }
-        //------------------
-    }
 
     var Smgr = new  esparty.elvis3d.scene.SceneManager({
         camera : {
@@ -106,6 +54,110 @@
             var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
             controls.target.set(0,0,0);
             controls.update();
+
+            esparty.elvis3d.assetManager.SetupAsset(
+                    {
+                        resTable :  [
+                            {
+                                file : '_Roofing.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Fencing_.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Ground01.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Groundco.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Vegeta01.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Vegetati.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'Water_De.jpg',
+                                type : 'texture',
+                                option : {
+                                    wrapS : THREE.RepeatWrapping,
+                                    wrapT : THREE.RepeatWrapping
+                                }
+                            },
+                            {
+                                file : 'scene.json',
+                                type : 'blender.json',
+                                callback : function ( geometry, materials,assetManager ) {
+                                    /*
+                                     페이스(삼각형)별로 메트리얼을 달리하여 랜더링하는 기능을 지원한다.
+                                     face에는 메트리얼 배열의 인덱스를 가지고있다.
+                                     */
+
+                                    for(var i =0; i < materials.length ; i++) {
+                                        //디뷰즈멥을 익스포터의 문제로 라이트멥으로빠진다.
+                                        if(materials[i].lightMap) {
+                                            materials[i].lightMap = null; //라이트멥 취소
+                                        }
+
+                                        var res = assetManager.resIndex[  materials[i].name + '.jpg' ]
+
+                                        if(res) {
+                                            console.log(i + ',' + materials[i].name )
+                                            console.log( res );
+
+                                            materials[i].map = res.texture;
+                                        }
+                                        materials[i].side = THREE.DoubleSide; //더블싸이드
+                                    }
+                                    console.log(materials)
+                                    console.log(geometry);
+
+                                    var zmesh = new THREE.Mesh( geometry, new THREE.MultiMaterial( materials ) );
+                                    scope.scene.add(zmesh);
+                                }
+                            }
+                        ],
+                        callback : function (evt) {
+                            console.log('asset load complete')
+                            console.log(evt);
+                        },
+                        assetPath : './ground/'
+
+                    }
+            );
+
+
+            /*
 
             // model
             var manager = new THREE.LoadingManager();
@@ -192,10 +244,7 @@
                     ],
                     function (err, result) {
 
-                        /*
-                         페이스(삼각형)별로 메트리얼을 달리하여 랜더링하는 기능을 지원한다.
-                         face에는 메트리얼 배열의 인덱스를 가지고있다.
-                         */
+
 
                         var loader = new THREE.JSONLoader(manager);
                         loader.load( './ground/scene.json', function ( geometry, materials ) {
@@ -220,7 +269,7 @@
                         });
 
                     });
-
+*/
             //방향광
             var directionalLight = new THREE.DirectionalLight( 0xffffff );
             directionalLight.position.set( 2, 2, 2 )
