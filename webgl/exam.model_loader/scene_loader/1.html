@@ -50,20 +50,14 @@
             // model
             var manager = new THREE.LoadingManager();
             manager.onProgress = function( item, loaded, total ) {
-
                 console.log( item, loaded, total );
-
             };
 
             var onProgress = function( xhr ) {
-
                 if ( xhr.lengthComputable ) {
-
                     var percentComplete = xhr.loaded / xhr.total * 100;
                     console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
-
                 }
-
             };
 
             var onError = function( xhr ) {
@@ -75,12 +69,9 @@
                             //json 모델 로더 생성 , json로더는 엔진에 기본 내장되어있다
                             var loader = new THREE.ObjectLoader(manager);
                             loader.load( './bullet.json', function ( obj ) {
-
-                                console.log(obj)
-
-                                scope.scene.add(obj.getObjectByName('bullet_root'))
-
-                                next(null)
+                                console.log(obj);
+                                scope.scene.add(obj.getObjectByName('bullet_root'));
+                                next(null);
 
                             });
 
