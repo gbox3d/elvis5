@@ -66,11 +66,14 @@
             async.waterfall([
                         function (next) {
 
+                            console.log('start load..')
                             //json 모델 로더 생성 , json로더는 엔진에 기본 내장되어있다
                             var loader = new THREE.ObjectLoader(manager);
                             loader.load( './bullet.json', function ( obj ) {
-                                console.log(obj);
+                            loader.load( './scene.json', function ( obj ) {
+                                //console.log(obj);
                                 scope.scene.add(obj.getObjectByName('bullet_root'));
+                                //scope.scene.add(obj);
                                 next(null);
 
                             });
