@@ -8,11 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
     <script src='../libs/extra/jquery-2.0.3.min.js'></script>
-
     <script src='../libs/threejs/three.js'></script>
-    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
-
     <script src="../libs/elvis5/core.js"></script>
 
 </head>
@@ -40,11 +37,10 @@
 
             //초기화 코드는 여기에서 코딩한다.
 
-            var self = this;
+            var scope = this;
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
             this.scene.add(helper);
 
             //라인전용메트리얼..
@@ -63,8 +59,6 @@
             //라인오브잭트
             var line = new THREE.Line( geometry, material );
             this.scene.add( line );
-
-
 
             //오빗컨트롤
             //카메라의 현재 위치 기준으로 시작한다.
