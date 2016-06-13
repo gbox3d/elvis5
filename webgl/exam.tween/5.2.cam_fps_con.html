@@ -83,23 +83,17 @@
              처음에 오는 축이 항상 월드 축에 고정된다.
              */
             scope.camera.rotation.reorder('YXZ');
-
             scope.startCam = function (angle_x,angle_y) {
-                //scope.camera.rotation.y = THREE.Math.degToRad(angle)
-
                 new TWEEN.Tween(Smgr.camera.rotation)
-                        .to({x:THREE.Math.degToRad(angle_x),y:THREE.Math.degToRad(angle_y)},3000)
+                        .to({x:THREE.Math.degToRad(angle_x),
+                            y:THREE.Math.degToRad(angle_y)},3000)
                         .onUpdate(function () {
-                            console.log(Smgr.camera.rotation)
+                            console.log(Smgr.camera.rotation);
                             //Smgr.camera.lookAt(this)
                         })
                         .easing( TWEEN.Easing.Exponential.InOut )
                         .start();
-
-
             }
-
-
 
         },
         event : {
