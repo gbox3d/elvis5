@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title> line </title>
+    <title> hello ammojs </title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
@@ -21,20 +21,24 @@
 <script>
 
     function main() {
+
         var collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration(),
                 dispatcher              = new Ammo.btCollisionDispatcher(collisionConfiguration),
                 overlappingPairCache    = new Ammo.btDbvtBroadphase(),
                 solver                  = new Ammo.btSequentialImpulseConstraintSolver(),
-                dynamicsWorld           = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+                dynamicsWorld           = new Ammo.btDiscreteDynamicsWorld(dispatcher,
+                        overlappingPairCache,
+                        solver,
+                        collisionConfiguration);
         dynamicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
 
 
-        var groundShape     = new Ammo.btBoxShape(new Ammo.btVector3(50, 50, 50)),
+        var groundShape     = new Ammo.btBoxShape(new Ammo.btVector3(50, 1, 50)),
                 bodies          = [],
                 groundTransform = new Ammo.btTransform();
 
         groundTransform.setIdentity();
-        groundTransform.setOrigin(new Ammo.btVector3(0, -56, 0));
+        groundTransform.setOrigin(new Ammo.btVector3(0, -1, 0));
 
 
         (function() {
@@ -46,7 +50,8 @@
                 groundShape.calculateLocalInertia(mass, localInertia);
 
             var myMotionState = new Ammo.btDefaultMotionState(groundTransform),
-                    rbInfo        = new Ammo.btRigidBodyConstructionInfo(mass, myMotionState, groundShape, localInertia),
+                    rbInfo        = new Ammo.btRigidBodyConstructionInfo(mass,
+                            myMotionState, groundShape, localInertia),
                     body          = new Ammo.btRigidBody(rbInfo);
 
             dynamicsWorld.addRigidBody(body);
@@ -70,7 +75,8 @@
             startTransform.setOrigin(new Ammo.btVector3(2, 10, 0));
 
             var myMotionState = new Ammo.btDefaultMotionState(startTransform),
-                    rbInfo        = new Ammo.btRigidBodyConstructionInfo(mass, myMotionState, colShape, localInertia),
+                    rbInfo        = new Ammo.btRigidBodyConstructionInfo(mass,
+                            myMotionState, colShape, localInertia),
                     body          = new Ammo.btRigidBody(rbInfo);
 
             dynamicsWorld.addRigidBody(body);
@@ -81,7 +87,7 @@
         var trans = new Ammo.btTransform(); // taking this out of the loop below us reduces the leaking
 
         var dummy = new THREE.Group();
-        var geometry = new THREE.IcosahedronGeometry(0.1,2);
+        var geometry = new THREE.IcosahedronGeometry(1,2);
         var material = new THREE.MeshBasicMaterial(
                 {
                     color: 0x00ff00,
@@ -89,11 +95,16 @@
                 }
         );
 
-        for (var i = 0; i < 135; i++) {
-            dynamicsWorld.stepSimulation(1/60, 10);
+        console.log(bodies);
+
+        for (var i = 0; i < 8; i++) {
+            dynamicsWorld.stepSimulation(1/5, 10);
 
             bodies.forEach(function(body) {
-                if (body.getMotionState()) {
+
+                console.log(body.getCollisionShape())
+
+                if (body.getMotionState() && body.name == 'ball-1') {
                     body.getMotionState().getWorldTransform(trans);
                     console.log("world pos = " + [trans.getOrigin().x().toFixed(2), trans.getOrigin().y().toFixed(2), trans.getOrigin().z().toFixed(2)]);
 
