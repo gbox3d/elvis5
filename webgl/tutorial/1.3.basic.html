@@ -24,7 +24,7 @@
 <body>
 <script>
 
-    var Smgr = new esparty.elvis3d.scene.SceneManager({
+    let Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
             far : 5000,
@@ -72,8 +72,7 @@
             controls.update();
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
             this.scene.add(helper);
 
         },

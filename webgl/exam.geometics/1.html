@@ -2,15 +2,12 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>기본 도형 예제 </title>
+    <title> line </title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
 
-    <title>hello webgl</title>
-
-    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
-
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
     <script src='../libs/threejs/three.js'></script>
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
     <script src="../libs/elvis5/core.js"></script>
@@ -20,7 +17,7 @@
 
 <script>
 
-    let Smgr = new ramb3d.scene.SceneManager({
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
             far : 5000,
@@ -39,42 +36,35 @@
         setup : function() {
 
             //초기화 코드는 여기에서 코딩한다.
+            var scope = this;
 
-            var self = this;
+            //라인전용메트리얼..
+            var material = new THREE.LineBasicMaterial({
+                color: 0xffffff
+            });
 
-            //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
-            //helper.setColors(0x00ff00,0xff0000);
-            this.scene.add(helper);
-
-            var material = new THREE.MeshBasicMaterial(
-                    {
-                        color: 0x00ff00,
-                        wireframe : true
-
-                    }
+            //버텍스 직접 추가
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(
+                    new THREE.Vector3( 0, 0, 0 ),
+                    new THREE.Vector3( 1, 1, 0 )
+                    //new THREE.Vector3( 0, 0, 0 )
             );
 
-            //삼각형 모양
-            {
-                var geometry = new THREE.Geometry();
-                geometry.vertices.push( new THREE.Vector3( -1, 1, 0 ), new THREE.Vector3( -1, -1, 0 ), new THREE.Vector3( 1, -1, 0 ) );
-                geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
-                geometry.computeBoundingSphere();
-                geometry.computeFaceNormals();
-
-                var node = new THREE.Mesh(geometry, material);
-                node.position.set(0,0,0);
-                node.name = 'wire_cube';
-                this.scene.add(node);
-            }
-
+            //라인오브잭트
+            var line = new THREE.Line( geometry, material );
+            this.scene.add( line );
 
             //오빗컨트롤
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera );
-            controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
             controls.update();
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
+            this.scene.add(helper);
+
         },
         event : {
             onWindowResize : function() {
@@ -103,11 +93,6 @@
             }
         }
     });
-
-
-
-
-
 
 </script>
 
