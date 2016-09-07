@@ -17,6 +17,8 @@
 
 <script>
 
+    let temp_x=0;
+
     var Smgr = new esparty.elvis3d.scene.SceneManager({
         camera : {
             fov : 45,
@@ -52,8 +54,9 @@
             );
 
             //라인오브잭트
-            var line = new THREE.Line( geometry, material );
+            let line = new THREE.Line( geometry, material );
             this.scene.add( line );
+            this.lineObject = line;
 
             //오빗컨트롤
             //카메라의 현재 위치 기준으로 시작한다.
@@ -64,6 +67,17 @@
             //그리드헬퍼
             var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
             this.scene.add(helper);
+
+//            (()=> {
+//                let temp_x=0;
+//                return ()=> {
+//                    temp_x += event.deltaTick * THREE.Math.PI;
+//                    console.log(THREE.Math.sin(temp_x))
+//
+//
+//                }
+//            })();
+
 
         },
         event : {
@@ -77,6 +91,15 @@
                 });
             },
             onUpdate : function(event) {
+
+                temp_x += event.deltaTick * 3.14;
+                //console.log(temp_x)
+                console.log(Math.sin(temp_x));
+
+                this.lineObject.geometry.vertices[1].x = Math.sin(temp_x);
+                this.lineObject.geometry.vertices[1].y = Math.cos(temp_x);
+                this.lineObject.geometry.verticesNeedUpdate = true;
+
 
                 this.updateAll();
             },

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title> line collusion detect </title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src='../libs/extra/jquery-2.0.3.min.js'></script>
+    <script src='../libs/threejs/three.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+
+    /*
+    Ray 객체를 이용해서 직선과의 광선의 충돌점을 구한다. (직선과 직선의 교점 )
+     */
+
+    var Smgr = new esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+            var scope = this;
+
+            //라인전용메트리얼..
+            var material = new THREE.LineBasicMaterial({
+                color: 0xffffff
+            });
+
+            //버텍스 직접 추가
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(
+                    new THREE.Vector3( 0, 0, 0 ),
+                    new THREE.Vector3( 1, 1, 0 )
+                    //new THREE.Vector3( 0, 0, 0 )
+            );
+
+            //라인오브잭트
+            let line = new THREE.Line( geometry, material );
+            this.scene.add( line );
+            //this.lineObject = line;
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera );
+            controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+            controls.update();
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
+            this.scene.add(helper);
+
+            this.AppObject = {
+                ray : new THREE.Ray(),
+                temp_radian : 0,
+                lineObject : line
+            }
+
+            {
+                let material = new THREE.MeshBasicMaterial(
+                        {
+                            color: 0x00ff00,
+                            wireframe : true
+
+                        }
+                );
+                let geometry = new THREE.CubeGeometry(.2,.2,.2);
+
+                let node = new THREE.Mesh(geometry, material);
+                node.position.set(0,0,0);
+                node.name = 'wire_cube';
+                this.scene.add(node);
+
+                this.AppObject.point_1 = node;
+
+
+            }
+            {
+                let material = new THREE.MeshBasicMaterial(
+                        {
+                            color: 0xffff00,
+                            wireframe : true
+
+                        }
+                );
+                let geometry = new THREE.CubeGeometry(.2,.2,.2);
+
+                let node = new THREE.Mesh(geometry, material);
+                node.position.set(2,0.5,0);
+                node.name = 'wire_cube';
+                this.scene.add(node);
+
+                this.AppObject.point_2 = node;
+
+
+            }
+            {
+                let material = new THREE.MeshBasicMaterial(
+                        {
+                            color: 0xffff00,
+                            wireframe : true
+
+                        }
+                );
+                let geometry = new THREE.CubeGeometry(.2,.2,.2);
+
+                let node = new THREE.Mesh(geometry, material);
+                node.position.set(-2,0.5,0);
+                node.name = 'wire_cube';
+                this.scene.add(node);
+
+                this.AppObject.point_3 = node;
+            }
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+
+                this.AppObject.temp_radian += event.deltaTick * (.314);
+
+                let xpos = Math.sin(this.AppObject.temp_radian);
+                let ypos = Math.cos(this.AppObject.temp_radian);
+
+                this.AppObject.lineObject.geometry.vertices[1].x = xpos;
+                this.AppObject.lineObject.geometry.vertices[1].y = ypos;
+                this.AppObject.lineObject.geometry.verticesNeedUpdate = true;
+
+
+                {
+                    let origin = new THREE.Vector3(0,0,0);
+                    let direction = new THREE.Vector3();
+                    direction.copy(this.AppObject.lineObject.geometry.vertices[1]);
+                    direction.sub(origin);
+                    direction.normalize();
+                    this.AppObject.ray.set(origin,direction);
+                    //ray = new THREE.Ray(origin,direction);
+                }
+
+                //충돌 검출
+                {
+                    //구간 설정
+                    let start_line = this.AppObject.point_2.position;
+                    let end_line = this.AppObject.point_3.position;
+                    let closet_point = new THREE.Vector3();
+
+                    //근접점 찾기
+                    let dist = this.AppObject.ray.distanceSqToSegment(start_line,end_line,closet_point);
+                    //console.log(closet_point);
+                    //console.log(dist);
+                    if(dist < 0.0001) { //거리가 0에 가까우면 충돌로 판정
+                        this.AppObject.point_1.position.copy(closet_point);
+                    }
+                    else {
+                        this.AppObject.point_1.position.set(0,0,0);
+
+                    }
+
+                }
+
+                this.updateAll();
+            },
+            onMouseMove : function(event) {
+
+                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+            },
+            onKeyDown : function(event) {
+
+                console.log(event);
+
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
