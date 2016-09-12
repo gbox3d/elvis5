@@ -151,11 +151,13 @@
                 let xpos = Math.sin(this.AppObject.temp_radian);
                 let ypos = Math.cos(this.AppObject.temp_radian);
 
+                //라인 갱신
                 this.AppObject.lineObject.geometry.vertices[1].x = xpos;
                 this.AppObject.lineObject.geometry.vertices[1].y = ypos;
                 this.AppObject.lineObject.geometry.verticesNeedUpdate = true;
 
 
+                //광선 만들기
                 {
                     let origin = new THREE.Vector3(0,0,0);
                     let direction = new THREE.Vector3();
@@ -174,7 +176,9 @@
                     let closet_point = new THREE.Vector3();
 
                     //근접점 찾기
-                    let dist = this.AppObject.ray.distanceSqToSegment(start_line,end_line,closet_point);
+                    let dist = this.AppObject.ray.distanceSqToSegment(start_line,end_line,
+                            closet_point //충돌점
+                    );
                     //console.log(closet_point);
                     //console.log(dist);
                     if(dist < 0.0001) { //거리가 0에 가까우면 충돌로 판정
