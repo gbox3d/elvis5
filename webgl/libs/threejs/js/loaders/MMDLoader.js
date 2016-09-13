@@ -33,9 +33,9 @@
  *  - shadow support.
  */
 
-THREE.MMDLoader = function ( showStatus, manager ) {
+THREE.MMDLoader = function ( manager ) {
 
-	THREE.Loader.call( this, showStatus );
+	THREE.Loader.call( this );
 	this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
 	this.defaultTexturePath = './models/default/';
 
@@ -479,10 +479,7 @@ THREE.MMDLoader.prototype.parsePmd = function ( buffer ) {
 		var parseBone = function () {
 
 			var p = {};
-			// Skinning animation doesn't work when bone name is Japanese Unicode in r73.
-			// So using charcode strings as workaround and keep original strings in .originalName.
-			p.originalName = dv.getSjisStringsAsUnicode( 20 );
-			p.name = helper.toCharcodeStrings( p.originalName );
+			p.name = dv.getSjisStringsAsUnicode( 20 );
 			p.parentIndex = dv.getInt16();
 			p.tailIndex = dv.getInt16();
 			p.type = dv.getUint8();
@@ -989,7 +986,7 @@ THREE.MMDLoader.prototype.parsePmx = function ( buffer ) {
 		var parseFace = function () {
 
 			var p = {};
-			p.indices = dv.getIndexArray( metadata.vertexIndexSize, 3 );
+			p.indices = dv.getIndexArray( metadata.vertexIndexSize, 3, true );
 			return p;
 
 		};
@@ -1085,10 +1082,7 @@ THREE.MMDLoader.prototype.parsePmx = function ( buffer ) {
 		var parseBone = function () {
 
 			var p = {};
-			// Skinning animation doesn't work when bone name is Japanese Unicode in r73.
-			// So using charcode strings as workaround and keep original strings in .originalName.
-			p.originalName = dv.getTextBuffer();
-			p.name = helper.toCharcodeStrings( p.originalName );
+			p.name = dv.getTextBuffer();
 			p.englishName = dv.getTextBuffer();
 			p.position = dv.getFloat32Array( 3 );
 			p.parentIndex = dv.getIndex( pmx.metadata.boneIndexSize );
@@ -1214,7 +1208,7 @@ THREE.MMDLoader.prototype.parsePmx = function ( buffer ) {
 				} else if ( p.type === 1 ) {  // vertex morph
 
 					var m = {};
-					m.index = dv.getIndex( pmx.metadata.vertexIndexSize );
+					m.index = dv.getIndex( pmx.metadata.vertexIndexSize, true );
 					m.position = dv.getFloat32Array( 3 );
 					p.elements.push( m );
 
@@ -1229,7 +1223,7 @@ THREE.MMDLoader.prototype.parsePmx = function ( buffer ) {
 				} else if ( p.type === 3 ) {  // uv morph
 
 					var m = {};
-					m.index = dv.getIndex( pmx.metadata.vertexIndexSize );
+					m.index = dv.getIndex( pmx.metadata.vertexIndexSize, true );
 					m.uv = dv.getFloat32Array( 4 );
 					p.elements.push( m );
 
@@ -1267,7 +1261,6 @@ THREE.MMDLoader.prototype.parsePmx = function ( buffer ) {
 			pmx.morphs.push( parseMorph() );
 
 		}
-
 
 	};
 
@@ -1429,10 +1422,7 @@ THREE.MMDLoader.prototype.parseVmd = function ( buffer ) {
 		var parseMotion = function () {
 
 			var p = {};
-			// Skinning animation doesn't work when bone name is Japanese Unicode in r73.
-			// So using charcode strings as workaround and keep original strings in .originalName.
-			p.originalBoneName = dv.getSjisStringsAsUnicode( 15 );
-			p.boneName = helper.toCharcodeStrings( p.originalBoneName );
+			p.boneName = dv.getSjisStringsAsUnicode( 15 );
 			p.frameNum = dv.getUint32();
 			p.position = dv.getFloat32Array( 3 );
 			p.rotation = dv.getFloat32Array( 4 );
@@ -1650,8 +1640,7 @@ THREE.MMDLoader.prototype.parseVpd = function ( text ) {
 
 				bones.push( {
 
-					originalName: n,
-					name: helper.toCharcodeStrings( n ),
+					name: n,
 					translation: v,
 					quaternion: q
 
@@ -1809,9 +1798,7 @@ THREE.MMDLoader.prototype.createMesh = function ( model, texturePath, onProgress
 					var link = {};
 					link.index = ik.links[ j ].index;
 
-					// Checking with .originalName, not .name.
-					// See parseBone() for the detail.
-					if ( model.bones[ link.index ].originalName.indexOf( 'ひざ' ) >= 0 ) {
+					if ( model.bones[ link.index ].name.indexOf( 'ひざ' ) >= 0 ) {
 
 						link.limitation = new THREE.Vector3( 1.0, 0.0, 0.0 );
 
@@ -2591,21 +2578,6 @@ THREE.MMDLoader.prototype.createMesh = function ( model, texturePath, onProgress
 
 	};
 
-	function saveOriginalBoneNames ( mesh ) {
-
-		var bones = mesh.skeleton.bones;
-		var bones2 = mesh.geometry.bones;
-
-		for ( var i = 0; i < bones.length; i++ ) {
-
-			var n = model.bones[ i ].originalName;
-			bones[ i ].originalName = n;
-			bones2[ i ].originalName = n;
-
-		}
-
-	};
-
 	this.leftToRightModel( model );
 
 	initVartices();
@@ -2624,8 +2596,6 @@ THREE.MMDLoader.prototype.createMesh = function ( model, texturePath, onProgress
 	geometry.mmdFormat = model.metadata.format;
 
 	var mesh = new THREE.SkinnedMesh( geometry, material );
-
-	saveOriginalBoneNames( mesh );
 
 	// console.log( mesh ); // for console debug
 
@@ -2665,10 +2635,6 @@ THREE.MMDLoader.prototype.createAnimation = function ( mesh, vmd, name ) {
 				}
 			);
 
-		}
-
-		for ( var i = 0; i < orderedMotions.length; i++ ) {
-
 			var array = orderedMotions[ i ];
 			var keys = animation.hierarchy[ i ].keys;
 			var bone = bones[ i ];
@@ -2683,12 +2649,6 @@ THREE.MMDLoader.prototype.createAnimation = function ( mesh, vmd, name ) {
 
 			}
 
-		}
-
-		for ( var i = 0; i < orderedMotions.length; i++ ) {
-
-			var bone = bones[ i ];
-			var keys = animation.hierarchy[ i ].keys;
 			helper.insertBoneAnimationKeyAtTimeZero( keys, bone );
 			helper.insertStartBoneAnimationKey( keys );
 
@@ -2728,10 +2688,6 @@ THREE.MMDLoader.prototype.createAnimation = function ( mesh, vmd, name ) {
 		for ( var i = 0; i < orderedMorphs.length; i++ ) {
 
 			morphAnimation.hierarchy.push( { keys: [] } );
-
-		}
-
-		for ( var i = 0; i < orderedMorphs.length; i++ ) {
 
 			var array = orderedMorphs[ i ];
 			var keys = morphAnimation.hierarchy[ i ].keys;
@@ -3449,18 +3405,18 @@ THREE.MMDLoader.DataView.prototype = {
 
 	},
 
-	getIndex: function ( type ) {
+	getIndex: function ( type, isUnsigned ) {
 
 		switch ( type ) {
 
 			case 1:
-				return this.getInt8();
+				return ( isUnsigned === true ) ? this.getUint8() : this.getInt8();
 
 			case 2:
-				return this.getInt16();
+				return ( isUnsigned === true ) ? this.getUint16() : this.getInt16();
 
 			case 4:
-				return this.getInt32();
+				return this.getInt32(); // No Uint32
 
 			default:
 				throw 'unknown number type ' + type + ' exception.';
@@ -3469,13 +3425,13 @@ THREE.MMDLoader.DataView.prototype = {
 
 	},
 
-	getIndexArray: function ( type, size ) {
+	getIndexArray: function ( type, size, isUnsigned ) {
 
 		var a = [];
 
 		for ( var i = 0; i < size; i++ ) {
 
-			a.push( this.getIndex( type ) );
+			a.push( this.getIndex( type, isUnsigned ) );
 
 		}
 
@@ -3674,20 +3630,20 @@ THREE.ShaderLib[ 'mmd' ] = {
 		THREE.UniformsLib[ "lights" ],
 
 		{
-			"emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
-			"specular" : { type: "c", value: new THREE.Color( 0x111111 ) },
-			"shininess": { type: "f", value: 30 }
+			"emissive" : { value: new THREE.Color( 0x000000 ) },
+			"specular" : { value: new THREE.Color( 0x111111 ) },
+			"shininess": { value: 30 }
 		},
 
 		// ---- MMD specific for cel shading(outline drawing and toon mapping)
 		{
-			"outlineDrawing"  : { type: "i", value: 0 },
-			"outlineThickness": { type: "f", value: 0.0 },
-			"outlineColor"    : { type: "c", value: new THREE.Color( 0x000000 ) },
-			"outlineAlpha"    : { type: "f", value: 1.0 },
-			"celShading"      : { type: "i", value: 0 },
-			"toonMap"         : { type: "t", value: null },
-			"hasToonTexture"  : { type: "i", value: 0 }
+			"outlineDrawing"  : { value: 0 },
+			"outlineThickness": { value: 0.0 },
+			"outlineColor"    : { value: new THREE.Color( 0x000000 ) },
+			"outlineAlpha"    : { value: 1.0 },
+			"celShading"      : { value: 0 },
+			"toonMap"         : { value: null },
+			"hasToonTexture"  : { value: 0 }
 		}
 		// ---- MMD specific for cel shading(outline drawing and toon mapping)
 
@@ -3864,6 +3820,7 @@ THREE.ShaderLib[ 'mmd' ] = {
 			THREE.ShaderChunk[ "alphamap_fragment" ],
 			THREE.ShaderChunk[ "alphatest_fragment" ],
 			THREE.ShaderChunk[ "specularmap_fragment" ],
+			THREE.ShaderChunk[ "normal_flip" ],
 			THREE.ShaderChunk[ "normal_fragment" ],
 			THREE.ShaderChunk[ "emissivemap_fragment" ],
 
@@ -4076,6 +4033,12 @@ THREE.MMDHelper.prototype = {
 	},
 
 	add: function ( mesh ) {
+
+		if ( ! ( mesh instanceof THREE.SkinnedMesh ) ) {
+
+			throw new Error( 'THREE.MMDHelper.add() accepts only THREE.SkinnedMesh instance.' );
+
+		}
 
 		mesh.mixer = null;
 		mesh.ikSolver = null;
@@ -4421,17 +4384,78 @@ THREE.MMDHelper.prototype = {
 
 	},
 
-	renderOutline: function ( scene, camera ) {
+	renderOutline: function () {
 
-		var tmpEnabled = this.renderer.shadowMap.enabled;
-		this.renderer.shadowMap.enabled = false;
+		var invisibledObjects = [];
+		var setInvisible;
+		var restoreVisible;
 
-		this.setupOutlineRendering();
-		this.callRender( scene, camera );
+		return function renderOutline( scene, camera ) {
 
-		this.renderer.shadowMap.enabled = tmpEnabled;
+			var self = this;
 
-	},
+			if ( setInvisible === undefined ) {
+
+				setInvisible = function ( object ) {
+
+					if ( ! object.visible || ! object.layers.test( camera.layers ) ) return;
+
+					// any types else to skip?
+					if ( object instanceof THREE.Scene ||
+					     object instanceof THREE.Bone ||
+					     object instanceof THREE.Light ||
+					     object instanceof THREE.Camera ||
+					     object instanceof THREE.Audio ||
+					     object instanceof THREE.AudioListener ) return;
+
+					if ( object instanceof THREE.SkinnedMesh ) {
+
+						for ( var i = 0, il = self.meshes.length; i < il; i ++ ) {
+
+							if ( self.meshes[ i ] === object ) return;
+
+						}
+
+					}
+
+					object.layers.mask &= ~ camera.layers.mask;
+					invisibledObjects.push( object );
+
+				};
+
+			}
+
+			if ( restoreVisible === undefined ) {
+
+				restoreVisible = function () {
+
+					for ( var i = 0, il = invisibledObjects.length; i < il; i ++ ) {
+
+						invisibledObjects[ i ].layers.mask |= camera.layers.mask;
+
+					}
+
+					invisibledObjects.length = 0;
+
+				};
+
+			}
+
+			scene.traverse( setInvisible );
+
+			var tmpEnabled = this.renderer.shadowMap.enabled;
+			this.renderer.shadowMap.enabled = false;
+
+			this.setupOutlineRendering();
+			this.callRender( scene, camera );
+
+			this.renderer.shadowMap.enabled = tmpEnabled;
+
+			restoreVisible();
+
+		};
+
+	}(),
 
 	callRender: function ( scene, camera ) {
 
@@ -4521,32 +4545,11 @@ THREE.MMDHelper.prototype = {
 
 	},
 
-	resetPose: function ( mesh ) {
-
-		var bones = mesh.skeleton.bones;
-		var bones2 = mesh.geometry.bones;
-
-		var v = new THREE.Vector3();
-		var q = new THREE.Quaternion();
-
-		for ( var i = 0; i < bones.length; i++ ) {
-
-			var b = bones2[ i ];
-			v.set( b.pos[ 0 ], b.pos[ 1 ], b.pos[ 2 ] );
-			q.set( b.rotq[ 0 ], b.rotq[ 1 ], b.rotq[ 2 ], b.rotq[ 3 ] );
-
-			bones[ i ].position.copy( v );
-			bones[ i ].quaternion.copy( q );
-
-		}
-
-	},
-
 	poseAsVpd: function ( mesh, vpd, params ) {
 
 		if ( ! ( params && params.preventResetPose === true ) ) {
 
-			this.resetPose( mesh );
+			mesh.pose();
 
 		}
 
