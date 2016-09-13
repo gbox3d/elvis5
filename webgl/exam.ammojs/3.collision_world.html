@@ -9,6 +9,9 @@
     <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
     <script src="../libs/elvis5/core.js"></script>
 
+    <script src="../libs/threejs/js/libs/ammo.js"></script>
+
+
     <style>
 
         body {
@@ -22,6 +25,14 @@
 <body>
 
 <script>
+
+    /*
+
+     http://www.bulletphysics.org/mediawiki-1.5.8/index.php?title=Collision_Callbacks_and_Triggers
+
+
+     */
+
 
     var Smgr = new  esparty.elvis3d.scene.SceneManager({
         camera : {
@@ -55,18 +66,9 @@
             controls.target.set(0,0,0);
             controls.update();
 
-            //씬노드 추가
-            var geometry = new THREE.CubeGeometry(1,1,1);
-            var material = new THREE.MeshBasicMaterial(
-                    {
-                        color: 0x00ff00,
-                        wireframe : true
 
-                    }
-            );
-            var node = new THREE.Mesh(geometry, material);
-            node.name = 'wire_cube';
-            scope.scene.add(node);
+
+
 
         },
         event : {
@@ -80,6 +82,7 @@
                 });
             },
             onUpdate : function(event) {
+
 
                 this.updateAll();
             },
