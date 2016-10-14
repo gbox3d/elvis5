@@ -75,6 +75,7 @@
                 node.name = 'wire_cube2';
                 scope.scene.add(node);
                 node.position.set(2,0,0);
+                this.target_node = node;
             }
 
         },
@@ -90,7 +91,15 @@
             },
             onUpdate : function(event) {
 
+                let box1 = new THREE.Box3()
+                box1.setFromObject(this.control_node);
 
+                let box2 = new THREE.Box3()
+                box2.setFromObject(this.target_node);
+
+                if(box1.intersectsBox(box2)) {
+                    console.log('hit');
+                }
 
                 this.updateAll();
             },
