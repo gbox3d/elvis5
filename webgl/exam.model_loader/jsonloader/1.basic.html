@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>전체화면 예제 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src="../../libs/extra/async.js" ></script>
+    <script src='../../libs/threejs/three.js'></script>
+    <script src="../../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../../libs/elvis5/core.js"></script>
+    <script src="../../libs/elvis5/assetManager.js"></script>
+
+
+</head>
+<body style="margin: 0px;" >
+
+<script>
+
+    /*
+     블랜더용 json익스포터 사용 예제
+     */
+
+    function SetupAsset(callback,res_table) {
+
+        var assetPath = './ground/';
+
+        var total_count = 0;
+        for(var key in res_table) {
+            total_count++;
+        }
+        var load_count = 0;
+        var loader_texture = new THREE.TextureLoader();
+
+        for(var key in res_table) {
+
+            (function () {
+                var _key = key;
+                var __key = assetPath + key;
+
+                var loader = loader_texture;
+
+                loader.load(
+                        __key,
+                        function (texture) {
+                            console.log('load success..' + __key);
+                            if(res_table[_key].option) {
+                                if(res_table[_key].option.wrapS) {
+                                    texture.wrapS = res_table[_key].option.wrapS
+                                }
+                                if(res_table[_key].option.wrapT) {
+                                    texture.wrapT = res_table[_key].option.wrapT
+                                }
+                            }
+
+                            res_table[_key].texture = texture;
+                            load_count++
+                            if(total_count <= load_count) {
+                                callback({event : 'onload', res_table : res_table});
+                            }
+                        },
+                        function (xhr) {
+                            console.log(  _key + ', '  +(xhr.loaded / xhr.total * 100) + '% loaded' );
+
+                        },
+                        function (xhr) {
+                            console.log( _key + ', '  + 'An error happened' );
+                            callback({event : 'onerror'});
+                        }
+                );
+                //----------
+            })();
+            //--------------
+        }
+        //------------------
+    }
+
+    var Smgr = new  esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+            var scope = this;
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
+            //helper.setColors(0x00ff00,0xff0000);
+
+            scope.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
+            controls.target.set(0,0,0);
+            controls.update();
+
+            esparty.elvis3d.assetManager.SetupAsset({
+                resTable :  [
+                    {
+                        file : 'body.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
+
+                            console.log(materials)
+                            console.log(geometry);
+
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ));
+                            zmesh.scale.set(10,10,10);
+                            scope.scene.add(zmesh);
+
+
+                        }
+                    },
+                    {
+                        file : 'head.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
+
+                            console.log(materials)
+                            console.log(geometry);
+
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ) );
+                            zmesh.scale.set(10,10,10);
+                            zmesh.position.set(0,3,0);
+
+                            scope.scene.add(zmesh);
+
+
+                        }
+                    },
+                    {
+                        file : 'low.json',
+                        type : 'blender.json',
+                        callback : function ( geometry, materials,assetManager ) {
+
+                            console.log(materials)
+                            console.log(geometry);
+
+                            var zmesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial(
+                                    {
+                                        wireframe:true
+                                    }
+                            ) );
+                            zmesh.scale.set(10,10,10);
+                            zmesh.position.set(0,-3,0);
+                            scope.scene.add(zmesh);
+
+
+                        }
+                    }
+                ],
+                callback : function (evt) {
+                    console.log('asset load complete')
+                    console.log(evt);
+                },
+                assetPath : './bullet/'
+            })
+
+
+            //방향광
+            var directionalLight = new THREE.DirectionalLight( 0xffffff );
+            directionalLight.position.set( 2, 2, 2 )
+            this.scene.add( directionalLight );
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+                this.updateAll();
+            },
+            onMouseDown : function(event) {
+
+            },
+            onMouseMove : function(event) {
+            },
+            onKeyDown : function(event) {
+                //console.log(event);
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

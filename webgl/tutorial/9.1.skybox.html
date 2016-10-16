@@ -37,8 +37,8 @@
         event : {
             onWindowResize : function() {
 
-                cameraCube.aspect = window.innerWidth / window.innerHeight;
-                cameraCube.updateProjectionMatrix();
+                this.cameraCube.aspect = window.innerWidth / window.innerHeight;
+                this.cameraCube.updateProjectionMatrix();
 
                 this.updateAll({
                     resize : {

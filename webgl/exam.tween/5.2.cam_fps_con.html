@@ -47,8 +47,7 @@
             var scope = this;
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 50, 1 ,0x00ff00,0xff0000);
             scope.scene.add(helper);
 
             //오빗컨트롤
@@ -84,23 +83,17 @@
              처음에 오는 축이 항상 월드 축에 고정된다.
              */
             scope.camera.rotation.reorder('YXZ');
-
             scope.startCam = function (angle_x,angle_y) {
-                //scope.camera.rotation.y = THREE.Math.degToRad(angle)
-
                 new TWEEN.Tween(Smgr.camera.rotation)
-                        .to({x:THREE.Math.degToRad(angle_x),y:THREE.Math.degToRad(angle_y)},3000)
-//                        .onUpdate(function () {
-//                            console.log(this)
-//                            //Smgr.camera.lookAt(this)
-//                        })
+                        .to({x:THREE.Math.degToRad(angle_x),
+                            y:THREE.Math.degToRad(angle_y)},3000)
+                        .onUpdate(function () {
+                            console.log(Smgr.camera.rotation);
+                            //Smgr.camera.lookAt(this)
+                        })
                         .easing( TWEEN.Easing.Exponential.InOut )
                         .start();
-
-
             }
-
-
 
         },
         event : {
@@ -114,9 +107,6 @@
                 });
             },
             onUpdate : function(event) {
-
-
-
                 TWEEN.update();
                 this.updateAll();
             },
@@ -131,7 +121,20 @@
 
             },
             onKeyDown : function(event) {
-                //console.log(event);
+                console.log(event);
+
+                if(event.code == 'KeyA') {
+
+                    this.startCam(0,90);
+
+                }
+                else if(event.code == 'KeyS') {
+                    this.startCam(0,0);
+                }
+                else if(event.code == 'KeyD') {
+                    this.startCam(0,-90);
+                }
+
             }
         }
     });

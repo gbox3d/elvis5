@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>전체화면 예제 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src='../libs/threejs/three.js'></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <script src="../libs/elvis5/core.js"></script>
+
+    <script src="../libs/threejs/js/libs/ammo.js"></script>
+
+
+    <style>
+
+        body {
+            margin: 0px; /* 화면 여백 제거   */
+            overflow: hidden /* 스크롤바 없애기  */
+        }
+
+    </style>
+
+</head>
+<body>
+
+<script>
+
+    // Physics variables
+    var collisionConfiguration;
+    var dispatcher;
+    var broadphase;
+    var solver;
+    var physicsWorld;
+    var dynamicObjects = [];
+    var transformAux1 = new Ammo.btTransform();
+
+    function initPhysics(Smgr) {
+
+        // Physics configuration
+
+        collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+        dispatcher = new Ammo.btCollisionDispatcher( collisionConfiguration );
+        broadphase = new Ammo.btDbvtBroadphase();
+        solver = new Ammo.btSequentialImpulseConstraintSolver();
+        physicsWorld = new Ammo.btDiscreteDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration );
+        physicsWorld.setGravity( new Ammo.btVector3( 0, -6, 0 ) );
+
+        var objectSize = 3;
+        var margin = 0.05;
+
+        let material = new THREE.MeshBasicMaterial(
+                {
+                    color: 0x00ff00,
+                    wireframe : true
+
+                }
+        );
+
+        // Box
+        {
+            let sx = 1 + Math.random() * objectSize;
+            let sy = 1 + Math.random() * objectSize;
+            let sz = 1 + Math.random() * objectSize;
+            let threeObject = new THREE.Mesh( new THREE.BoxGeometry( sx, sy, sz, 1, 1, 1 ), material );
+            let shape = new Ammo.btBoxShape( new Ammo.btVector3( sx * 0.5, sy * 0.5, sz * 0.5 ) );
+            shape.setMargin( margin );
+            threeObject.position.set( 0,5,0 );
+
+            let mass = objectSize * 5;
+            let localInertia = new Ammo.btVector3( 0, 0, 0 );
+            shape.calculateLocalInertia( mass, localInertia );
+            let transform = new Ammo.btTransform();
+            transform.setIdentity();
+
+            var pos = threeObject.position;
+            transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
+            var motionState = new Ammo.btDefaultMotionState( transform );
+            var rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, shape, localInertia );
+            var body = new Ammo.btRigidBody( rbInfo );
+
+            threeObject.userData.physicsBody = body;
+
+            //threeObject.receiveShadow = true;
+            //threeObject.castShadow = true;
+
+            Smgr.scene.add( threeObject );
+            dynamicObjects.push( threeObject );
+            physicsWorld.addRigidBody( body );
+
+        }
+
+        //바닥
+        {
+            let sx = 10;
+            let sy = 0.25;
+            let sz = 10;
+
+            let threeObject = new THREE.Mesh( new THREE.BoxGeometry( sx, sy, sz, 1, 1, 1 ), material );
+            let shape = new Ammo.btBoxShape( new Ammo.btVector3( sx * 0.5, sy * 0.5, sz * 0.5 ) );
+            shape.setMargin( margin );
+
+
+            let mass = 0.0;
+            let localInertia = new Ammo.btVector3( 0, 0, 0 );
+            shape.calculateLocalInertia( mass, localInertia );
+            let transform = new Ammo.btTransform();
+            transform.setIdentity();
+
+            var pos = threeObject.position;
+            transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
+            var motionState = new Ammo.btDefaultMotionState( transform );
+            var rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, shape, localInertia );
+            var body = new Ammo.btRigidBody( rbInfo );
+
+            threeObject.userData.physicsBody = body;
+
+            //threeObject.receiveShadow = true;
+            //threeObject.castShadow = true;
+
+            Smgr.scene.add( threeObject );
+            physicsWorld.addRigidBody( body );
+
+        }
+
+        //장애물
+        {
+            let sx = 1;
+            let sy = 1;
+            let sz = 1;
+
+            let threeObject = new THREE.Mesh( new THREE.BoxGeometry( sx, sy, sz, 1, 1, 1 ), material );
+            let shape = new Ammo.btBoxShape( new Ammo.btVector3( sx * 0.5, sy * 0.5, sz * 0.5 ) );
+            shape.setMargin( margin );
+            threeObject.position.set( 0.5,0.5,0 );
+            //45도 회전
+            threeObject.quaternion.setFromEuler(new THREE.Euler(0,0,45),true);
+
+
+            let mass = 0.0;
+            let localInertia = new Ammo.btVector3( 0, 0, 0 );
+            shape.calculateLocalInertia( mass, localInertia );
+            let transform = new Ammo.btTransform();
+            transform.setIdentity();
+
+            let pos = threeObject.position;
+            let qt = threeObject.quaternion;
+            transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
+            transform.setRotation( new Ammo.btQuaternion (qt.x,qt.y,qt.z,qt.w)  );
+            let motionState = new Ammo.btDefaultMotionState( transform );
+            let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, shape, localInertia );
+            let body = new Ammo.btRigidBody( rbInfo );
+
+            threeObject.userData.physicsBody = body;
+
+            //threeObject.receiveShadow = true;
+            //threeObject.castShadow = true;
+
+            Smgr.scene.add( threeObject );
+            physicsWorld.addRigidBody( body );
+
+        }
+
+    }
+
+
+    var Smgr = new  esparty.elvis3d.scene.SceneManager({
+        camera : {
+            fov : 45,
+            far : 5000,
+            near : 1,
+            position : new THREE.Vector3(0, 5, 10),
+            lookat : new THREE.Vector3()
+
+        },
+        renderer : {
+            type : 'webgl',
+            clear : {
+                color : 0x000000,
+                alpha : 1
+            }
+        },
+        setup : function() {
+
+            //초기화 코드는 여기에서 코딩한다.
+            var scope = this;
+
+            //그리드헬퍼
+            var helper =  new THREE.GridHelper( 8,16 ,0x00ff00,0xff0000);
+            //helper.setColors(0x00ff00,0xff0000);
+            scope.scene.add(helper);
+
+            //오빗컨트롤
+            //카메라의 현재 위치 기준으로 시작한다.
+            var controls = new THREE.OrbitControls( this.camera ,this.renderer.domElement);
+            controls.target.set(0,0,0);
+            controls.update();
+
+            initPhysics(this);
+
+
+        },
+        event : {
+            onWindowResize : function() {
+                //동적으로 창의 크기가 바뀌면 이부분이 콜백된다.
+                this.updateAll({
+                    resize : {
+                        width :  window.innerWidth,
+                        height : window.innerHeight
+                    }
+                });
+            },
+            onUpdate : function(event) {
+
+                //물리적용
+                {
+                    physicsWorld.stepSimulation( event.deltaTick, 10 );
+
+                    // Update objects
+                    for ( let i = 0, il = dynamicObjects.length; i < il; i++ ) {
+                        let objThree = dynamicObjects[ i ];
+                        let objPhys = objThree.userData.physicsBody;
+                        let ms = objPhys.getMotionState();
+                        if ( ms ) {
+
+                            ms.getWorldTransform( transformAux1 );
+                            let p = transformAux1.getOrigin();
+                            let q = transformAux1.getRotation();
+                            objThree.position.set( p.x(), p.y(), p.z() );
+                            objThree.quaternion.set( q.x(), q.y(), q.z(), q.w() );
+
+                        }
+                    }
+
+                }
+
+
+                this.updateAll();
+            },
+            onMouseDown : function(event) {
+
+            },
+            onMouseMove : function(event) {
+
+                //var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
+                //var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
+
+            },
+            onKeyDown : function(event) {
+                //console.log(event);
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>
