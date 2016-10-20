@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>전체화면 예제 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <style>
+
+        body {
+            margin: 0px; /* 화면 여백 제거   */
+            overflow: hidden; /* 스크롤바 없애기  */
+            background-color : black;
+        }
+
+    </style>
+
+</head>
+<body>
+<div>
+    <canvas id="myCanvas" width="320" height="240" style="border: solid 1px black" ></canvas>
+</div>
+
+
+<script>
+
+    var canvas = document.querySelector('#myCanvas');
+    var context = canvas.getContext('2d');
+
+    var base_point = new THREE.Vector3(0,0,0);
+
+    var target_point = new THREE.Vector3(0,100,0);
+
+
+    document.addEventListener('keydown',function (evt) {
+
+        if(evt.code == "KeyW") {
+            target_point.y -= 10;
+        }
+        if(evt.code == "KeyS") {
+            target_point.y += 10;
+        }
+
+        if(evt.code == "KeyA") {
+            target_point.x -= 10;
+        }
+
+        if(evt.code == "KeyD") {
+            target_point.x += 10;
+        }
+
+    });
+
+
+
+    function loop() {
+
+
+        //중점이동 초기화
+        context.setTransform(1,0,0,1,canvas.width/2, canvas.height/2); //변환행렬 초기화
+        //회면지우기
+        context.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
+        //십자선그리기
+        context.beginPath();
+        context.strokeStyle = '#ffffff';
+        context.moveTo(-canvas.width/2,0);
+        context.lineTo(canvas.width/2,0);
+        context.stroke()
+        context.beginPath();
+        context.moveTo(0,-canvas.height/2);
+        context.lineTo(0,canvas.height/2);
+        context.stroke()
+
+
+        let front_vect = new THREE.Vector3(0,1,0);
+
+        let dir_char = new THREE.Vector3();
+        dir_char.subVectors(target_point,base_point);
+        dir_char.normalize();
+
+        let target_angle;
+        if(base_point.x > target_point.x) {
+            target_angle = THREE.Math.radToDeg( front_vect.angleTo(dir_char) );
+
+        }
+        else {
+            target_angle = 360 - THREE.Math.radToDeg( front_vect.angleTo(dir_char) );
+        }
+
+
+        console.log(target_angle);
+
+        var quaternion = new THREE.Quaternion();
+        quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), target_angle * Math.PI / 180 );
+        front_vect.applyQuaternion(quaternion);
+
+
+        context.setTransform(1,0,0,1,canvas.width/2, canvas.height/2); //변환행렬 초기화
+        context.beginPath()
+        context.moveTo(base_point.x, base_point.y);
+        context.lineTo(front_vect.x*50, front_vect.y*50);
+        context.lineWidth = 1;
+        context.strokeStyle = '#00ff00';
+        context.stroke();
+
+
+        //충돌구 그리기
+        context.setTransform(1,0,0,1,canvas.width/2, canvas.height/2); //변환행렬 초기화
+        context.beginPath()
+        context.arc(target_point.x, target_point.y, 15 , 0, 2 * Math.PI, false);
+        context.lineWidth = 1;
+        context.strokeStyle = '#00ff00';
+        context.stroke();
+
+
+        requestAnimationFrame(loop)
+
+    }
+
+    loop();
+
+
+
+
+</script>
+
+</body>
+</html>
