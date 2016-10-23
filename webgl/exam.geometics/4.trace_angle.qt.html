@@ -27,11 +27,14 @@
 
 <script>
 
+    //조준 예제 , 바라보는곳 각도 구하기
+
     var canvas = document.querySelector('#myCanvas');
     var context = canvas.getContext('2d');
 
     var target_obj = {
-        pos : new THREE.Vector3(30,30,0)
+        pos : new THREE.Vector3(30,30,0),
+        rot : new THREE.Quaternion()
     }
 
     var current_tick = (new Date()).getTime();
@@ -72,10 +75,12 @@
         var vDir = target_obj.pos.clone();
         vDir.subVectors(target_obj.pos,new THREE.Vector3(0,0,0));
         vDir.normalize();
-        //var vdir = target_obj.pos.subVectors() - new THREE.Vector3(0,0,0)
         qt1.setFromUnitVectors(front_vect,vDir);
 
-        front_vect.applyQuaternion(qt1);
+        target_obj.rot.slerp(qt1,delta_tick);
+
+        //바라보게 하기 ,
+        front_vect.applyQuaternion(target_obj.rot);
 
         context.beginPath();
         context.moveTo(0,0);
