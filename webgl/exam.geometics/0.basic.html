@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title> canvas basic </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <style>
+
+        canvas {
+            margin: 0px; /* 화면 여백 제거   */
+            overflow: hidden; /* 스크롤바 없애기  */
+            background-color : black;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div style="text-align: center;" >
+    <canvas id="myCanvas" width="320" height="240" style="border: solid 1px black" ></canvas>
+</div>
+
+
+<script>
+
+    var canvas = document.querySelector('#myCanvas');
+    var context = canvas.getContext('2d');
+
+    function render_loop() {
+
+        //중점이동 초기화,
+        context.setTransform(
+                1,0,
+                0,-1, //y축을 뒤집는다
+                canvas.width/2, canvas.height/2 //중점이동
+        ); //변환행렬 초기화
+
+        //회면지우기
+        context.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
+        //십자선그리기
+        context.beginPath();
+        context.strokeStyle = '#ffffff';
+        context.moveTo(-canvas.width/2,0);
+        context.lineTo(canvas.width/2,0);
+        context.stroke()
+        context.beginPath();
+        context.moveTo(0,-canvas.height/2);
+        context.lineTo(0,canvas.height/2);
+        context.stroke()
+
+        //
+        context.beginPath()
+        context.arc(10,10,10, 0, 2 * Math.PI, false);
+        context.lineWidth = 1;
+        context.strokeStyle = '#00ff00';
+        context.stroke();
+
+
+        requestAnimationFrame(render_loop);
+    }
+
+    render_loop()
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

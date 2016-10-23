@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title> canvas </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no">
+
+    <script src='../libs/threejs/three.js'></script>
+
+    <style>
+
+        canvas {
+            margin: 0px; /* 화면 여백 제거   */
+            overflow: hidden; /* 스크롤바 없애기  */
+            background-color : black;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div style="text-align: center;" >
+    <canvas id="myCanvas" width="320" height="240" style="border: solid 1px black" ></canvas>
+</div>
+
+
+<script>
+
+    //조준 예제 , 바라보는곳 각도 구하기
+
+    var canvas = document.querySelector('#myCanvas');
+    var context = canvas.getContext('2d');
+
+    var target_obj = {
+        pos : new THREE.Vector3(30,30,0),
+        rot : new THREE.Quaternion()
+    }
+
+    var current_tick = (new Date()).getTime();
+    var delta_tick;
+
+    function render_loop() {
+
+        delta_tick = ((new Date()).getTime() - current_tick)/1000;
+        current_tick = (new Date()).getTime();
+
+
+        //중점이동 초기화
+        context.setTransform(1,0,0,-1,canvas.width/2, canvas.height/2); //변환행렬 초기화
+        //회면지우기
+        context.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
+        //십자선그리기
+        context.beginPath();
+        context.lineWidth = 1;
+        context.strokeStyle = '#ffffff';
+        context.moveTo(-canvas.width/2,0);
+        context.lineTo(canvas.width/2,0);
+        context.stroke()
+        context.beginPath();
+        context.moveTo(0,-canvas.height/2);
+        context.lineTo(0,canvas.height/2);
+        context.stroke();
+
+        //
+        context.beginPath()
+        context.arc(target_obj.pos.x,target_obj.pos.y,10, 0, 2 * Math.PI, false);
+        context.lineWidth = 1;
+        context.strokeStyle = '#00ff00';
+        context.stroke();
+
+        var front_vect  = new THREE.Vector3(0,1,0);
+
+        var qt1 = new THREE.Quaternion();
+        var vDir = target_obj.pos.clone();
+        vDir.subVectors(target_obj.pos,new THREE.Vector3(0,0,0));
+        vDir.normalize();
+        qt1.setFromUnitVectors(front_vect,vDir);
+
+        target_obj.rot.slerp(qt1,delta_tick);
+
+        //바라보게 하기 ,
+        front_vect.applyQuaternion(target_obj.rot);
+
+        context.beginPath();
+        context.moveTo(0,0);
+        context.lineTo(front_vect.x * 25,front_vect.y *25);
+        context.lineWidth = 2.5;
+        context.strokeStyle = '#ffff00';
+        context.stroke();
+
+        requestAnimationFrame(render_loop);
+    }
+
+    render_loop();
+
+    document.addEventListener('keydown',function (evt) {
+
+        console.log(evt);
+        switch(evt.code) {
+            case "KeyW":
+                target_obj.pos.y += delta_tick * 100;
+                break;
+            case "KeyS":
+                target_obj.pos.y -= delta_tick * 100;
+                break;
+            case "KeyA":
+                target_obj.pos.x -= delta_tick * 100;
+                break;
+            case "KeyD":
+                target_obj.pos.x += delta_tick * 100;
+                break;
+        }
+    })
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
