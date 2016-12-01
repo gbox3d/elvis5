@@ -43,11 +43,11 @@
             var scope = this;
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 3, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 1,8 ,0x00ff00,0xff0000);
+            helper.setColors();
             this.scene.add(helper);
 
-            var size = 48;
+            var size = 24;
             var text ="hello canvas";
             var canvas = document.createElement("canvas");
             canvas.width = 512;
@@ -68,7 +68,7 @@
             material.map.needsUpdate = true;
             var sprite = new THREE.Sprite( material );
 
-            sprite.position.set(0,0,0);
+            sprite.position.set(0.5,0.5,0);
             var ratio = texture.image.height/texture.image.width;
             var scale = 10.0;
             sprite.scale.set(1 * scale,ratio * scale)

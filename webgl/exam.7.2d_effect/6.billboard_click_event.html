@@ -44,8 +44,8 @@
             var scope = this;
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 3, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 2, 8,0x00ff00,0xff0000 );
+            //helper.setColors();
             this.scene.add(helper);
 
             //카메라의 현재 위치 기준으로 시작한다.

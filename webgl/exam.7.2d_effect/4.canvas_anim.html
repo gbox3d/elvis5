@@ -43,7 +43,7 @@
             var self = this;
 
             var canvas = document.createElement("canvas");
-            canvas.width = 512;
+            canvas.width = 800;
             canvas.height = 128;
             var ctx = canvas.getContext("2d");
 
@@ -101,8 +101,7 @@
             });
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 3, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 2, 8,0x00ff00,0xff0000 );
             this.scene.add(helper);
             //카메라의 현재 위치 기준으로 시작한다.
             var controls = new THREE.OrbitControls( this.camera,this.renderer.domElement );

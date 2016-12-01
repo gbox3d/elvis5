@@ -9,13 +9,18 @@
 
     <title> basic </title>
 
-    <script src='../libs/jquery-2.0.3.min.js'></script>
+    <!--<script src='../libs/jquery-2.0.3.min.js'></script>-->
+
+    <!--<script src='../libs/threejs/three.js'></script>-->
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <!--<script src="../libs/ramb3d/core.js"></script>-->
+
+    <!--<script src="../exam.2.gl/js/controls/OrbitControls.js"></script>-->
 
     <script src='../libs/threejs/three.js'></script>
-    <script src='../libs/threejs/CSS3DRenderer.js'></script>
-    <script src="../libs/ramb3d/core.js"></script>
-
-    <script src="../exam.2.gl/js/controls/OrbitControls.js"></script>
+    <script src="../libs/threejs/js/controls/OrbitControls.js"></script>
+    <!--<script src='../libs/threejs/CSS3DRenderer.js'></script>-->
+    <script src="../libs/elvis5/core.js"></script>
 
 </head>
 <body style="margin: 0px;" >
@@ -63,8 +68,8 @@
             var self = this;
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 8,32,0x00ff00,0xff0000 );
+            helper.setColors();
             this.scene.add(helper);
 
             //본헬퍼(삼각뿔)

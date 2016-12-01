@@ -19,7 +19,7 @@
             fov : 45,
             far : 5000,
             near : 1,
-            position : new THREE.Vector3(0, 2, 5),
+            position : new THREE.Vector3(2, 5, 15),
             lookat : new THREE.Vector3()
 
         },
@@ -64,8 +64,8 @@
             });
 
             //그리드헬퍼
-            var helper =  new THREE.GridHelper( 50, 1 );
-            helper.setColors(0x00ff00,0xff0000);
+            var helper =  new THREE.GridHelper( 8, 16,0x00ff00,0xff0000 );
+
             this.scene.add(helper);
 
             //오빗컨트롤
