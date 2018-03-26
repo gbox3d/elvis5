@@ -8,6 +8,10 @@
 
 /*
 
+
+version 2.0 for meteor: 2018.3.26
+--------------------
+
 r03,2015.12.1
  직교투영추가
 
@@ -17,17 +21,15 @@ util.createDummy 함수에서 기본 랜더러를 webgl로 수정
  */
 
 elvis5 = {
-    REVISION : 'r03',
+    REVISION : 'r04-nwm',
     Renderer : {},
     scene : {}
 }
 
 //네이스페이스설정
-esparty = {
-}
-esparty.elvis3d = elvis5;
 
 
+//esparty.elvis3d = elvis5;
 
 
 
@@ -394,5 +396,8 @@ elvis5.scene.SceneManager.prototype = {
     }
 
 }
+
+
+export default elvis5;
 
 

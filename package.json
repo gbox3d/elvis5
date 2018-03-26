@@ -1,0 +1,24 @@
+{
+  "name": "elvis5",
+  "version": "1.0.0",
+  "description": "webgl meteor frame work",
+  "main": "http://localhost:3000",
+  "scripts": {
+    "start": "meteor npx nw --enable-logging=stderr .",
+    "debug": "meteor npx nw --remote-debugging-port=9222",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbox3d/elvis5.git"
+  },
+  "author": "gbox3d",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbox3d/elvis5/issues"
+  },
+  "homepage": "https://github.com/gbox3d/elvis5#readme",
+  "dependencies": {
+    "nw": "^0.29.2"
+  }
+}
