@@ -35,5 +35,24 @@ FlowRouter.route('/exam2-2-1', {
   }
 });
 
+FlowRouter.route('/exam2-3-1', {
+  name:'skined mesh sample',
+  action: function () {
+    BlazeLayout.render('layout',{
+      layout : "skinedMeshLayout"
+    });
+  }
+});
+
+FlowRouter.route('/exam2-4-1', {
+  name:'create geometry sample',
+  action: function () {
+    BlazeLayout.render('layout',{
+      layout : "createGeoLayout"
+    });
+  }
+});
+
+
 
 

@@ -70,14 +70,10 @@ _template.onRendered(function () {
       },
       onMouseMove : function(event) {
 
+        /*
         var mx = ( event.offsetX / this.window_size.width ) * 2 - 1;
         var my = - ( event.offsetY / this.window_size.height ) * 2 + 1;
 
-        //templ_instance.xpos.set(mx.toFixed(2));
-        //templ_instance.ypos.set(my.toFixed(2));
-
-        //document.querySelector('#text-log .mouse-pos').innerText = mx.toFixed(2) + ',' + my.toFixed(2);
-        /*
          var vector = new THREE.Vector3( mx, my, 0.5 ).unproject( Smgr.camera );
 
          //위치변경은 position을 사용한다.
@@ -88,7 +84,7 @@ _template.onRendered(function () {
       },
       onKeyDown : function(event) {
 
-        console.log(event);
+        //console.log(event);
 
       },
       onMouseDown : function(event) {
@@ -102,9 +98,6 @@ _template.onRendered(function () {
          */
 
         //console.log(event);
-
-
-
         this.updateAll();
 
 
