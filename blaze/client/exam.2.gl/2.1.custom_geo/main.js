@@ -1,6 +1,6 @@
 
 
-let _template = Template["skeleton-layout"];
+let _template = Template.customGeoLayout;
 
 _template.onCreated( function () {
   // console.log(Template);
@@ -36,21 +36,34 @@ _template.onRendered(function () {
       var helper =  new THREE.GridHelper( 50, 16 ,0x00ff00,0xff0000);
       self.scene.add(helper);
 
-
-      //씬노드 추가
-      var geometry = new THREE.CubeGeometry(1,1,1);
       var material = new THREE.MeshBasicMaterial(
         {
           color: 0x00ff00,
-          wireframe : true
+          //wireframe : true
 
         }
       );
-      var node = new THREE.Mesh(geometry, material);
 
-      node.name = 'wire_cube';
+      //삼각형 모양
+      {
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push( new THREE.Vector3( -1, 1, 0 ), new THREE.Vector3( -1, -1, 0 ), new THREE.Vector3( 1, -1, 0 ) );
+        geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+        geometry.computeBoundingSphere();
+        geometry.computeFaceNormals();
 
-      self.scene.add(node);
+        var node = new THREE.Mesh(geometry, material);
+        node.position.set(0,0,0);
+        node.name = 'custom geo';
+        self.scene.add(node);
+      }
+
+      //오빗컨트롤
+      //카메라의 현재 위치 기준으로 시작한다.
+      var controls = new THREE.OrbitControls( this.camera );
+      controls.target = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+      controls.update();
+
     },
     event : {
       onWindowResize : function(evt) {

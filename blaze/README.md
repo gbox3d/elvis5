@@ -47,7 +47,18 @@ var Smgr = new  elvis5.scene.SceneManager({
 });
 ```
 
+##예제 실행법
 
+콘솔창에서 location.pathname="/예제이름" 
+```js
+location.pathname="/exam2-1" 
+
+```
+또는 주소창에서 
+
+```
+http://localhost:3000/exam2
+```
 
 
 ### Change log ###

@@ -26,5 +26,14 @@ FlowRouter.route('/exam2-1', {
   }
 });
 
+FlowRouter.route('/exam2-2-1', {
+  name:'custom geo sample',
+  action: function () {
+    BlazeLayout.render('layout',{
+      layout : "customGeoLayout"
+    });
+  }
+});
+
 
 
