@@ -1,16 +1,3 @@
-import {Template} from "meteor/templating";
-import {ReactiveVar} from "meteor/reactive-var";
-
-
-import THREE from '../imports/threejs/core'
-import '../imports/threejs/OrbitControls'
-
-//import esparty from '../imports/esparty/main'
-import elvis5 from '../imports/elvis5/core'
-
-
-
-
 Template.hello.onCreated(function helloOnCreated() {
   // counter starts at 0
   this.xpos = new ReactiveVar(0);
@@ -44,9 +31,7 @@ Template.hello.onRendered(function () {
   console.log(THREE);
 
   let templ_instance = this;
-
-
-
+  
   var Smgr = new elvis5.scene.SceneManager({
     camera : {
       fov : 45,
