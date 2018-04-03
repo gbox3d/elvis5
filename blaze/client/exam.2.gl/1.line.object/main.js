@@ -1,6 +1,6 @@
 
 
-let _template = Template["skeleton-layout"];
+let _template = Template["exam2-1-layout"];
 
 _template.onCreated( function () {
   // console.log(Template);
@@ -33,24 +33,32 @@ _template.onRendered(function () {
       var self = this;
 
       //그리드헬퍼
-      var helper =  new THREE.GridHelper( 50, 16 ,0x00ff00,0xff0000);
+      var helper =  new THREE.GridHelper( 50, 8 ,0x00ff00,0xff0000);
       this.scene.add(helper);
 
+      //라인전용메트리얼..
+      var material = new THREE.LineBasicMaterial({
+        color: 0xffffff
+      });
 
-      //씬노드 추가
-      var geometry = new THREE.CubeGeometry(1,1,1);
-      var material = new THREE.MeshBasicMaterial(
-        {
-          color: 0x00ff00,
-          wireframe : true
-
-        }
+      //버텍스 직접 추가
+      var geometry = new THREE.Geometry();
+      geometry.vertices.push(
+        new THREE.Vector3( -3, 0, 0 ),
+        new THREE.Vector3( 0, 3, 0 ),
+        new THREE.Vector3( 3, 0, 0 )
       );
-      var node = new THREE.Mesh(geometry, material);
 
-      node.name = 'wire_cube';
+      //라인오브잭트
+      var line = new THREE.Line( geometry, material );
+      self.scene.add( line );
 
-      this.scene.add(node);
+      //오빗컨트롤
+      //카메라의 현재 위치 기준으로 시작한다.
+      var controls = new THREE.OrbitControls( self.camera );
+      controls.target.set(0,0,0);// = new THREE.Vector3( 0, 0, 0 ); //바라보는 위치
+      controls.update();
+
     },
     event : {
       onWindowResize : function(evt) {

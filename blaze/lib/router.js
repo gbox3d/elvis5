@@ -7,12 +7,24 @@ FlowRouter.route('/', {
   }
 });
 
-FlowRouter.route('/exam2', {
-  name:'exam2',
+FlowRouter.route('/skeleton', {
+  name:'skeleton layout',
   action: function () {
     BlazeLayout.render('layout',{
-      layout : "exam2-layout"
+      layout : "skeleton-layout"
     });
   }
 });
+
+
+FlowRouter.route('/exam2-1', {
+  name:'exam2-1 layout',
+  action: function () {
+    BlazeLayout.render('layout',{
+      layout : "exam2-1-layout"
+    });
+  }
+});
+
+
 
