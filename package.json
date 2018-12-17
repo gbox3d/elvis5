@@ -6,6 +6,7 @@
   "scripts": {
     "start": "meteor npx nw --enable-logging=stderr .",
     "debug": "meteor npx nw --remote-debugging-port=9222",
+    "http" : "npx http-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,5 +25,8 @@
   "window": {
     "width": 640,
     "height": 480
+  },
+  "devDependencies": {
+    "http-server": "^0.11.1"
   }
 }
