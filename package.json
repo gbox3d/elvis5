@@ -1,13 +1,11 @@
 {
   "name": "elvis5",
   "version": "1.0.0",
-  "description": "webgl meteor frame work",
+  "description": "webgl developers frame",
   "main": "http://localhost:3000",
   "scripts": {
-    "start": "meteor npx nw --enable-logging=stderr .",
-    "debug": "meteor npx nw --remote-debugging-port=9222",
-    "http" : "npx http-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=dev nodemon"
   },
   "repository": {
     "type": "git",
@@ -20,13 +18,18 @@
   },
   "homepage": "https://github.com/gbox3d/elvis5#readme",
   "dependencies": {
-    "nw": "^0.29.2"
-  },
-  "window": {
-    "width": 640,
-    "height": 480
+    "@babel/cli": "^7.17.3",
+    "@babel/core": "^7.17.5",
+    "@babel/node": "^7.16.8",
+    "@babel/preset-env": "^7.16.11",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "fs-ext": "^2.0.0",
+    "socket.io": "^4.4.1"
   },
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "cross-env": "^7.0.3",
+    "http-server": "^0.11.1",
+    "nodemon": "^2.0.15"
   }
 }

@@ -1,5 +1,36 @@
-elvis5
-========
+# elvis5
+
+2022 에 새롭게 리뉴얼 작업중  
+
+
+## setup
+
+새롭게 프로잭트의 모듈을 다시 세팅하고싶다면 아래와 같이 합니다.
+```sh
+npm i @babel/cli @babel/core @babel/node @babel/preset-env dotenv express fs-ext socket.io
+npm i -D cross-env nodemon
+```
+
+기존 버전의 모듈을 유지해서 사용한다면 아래와 같이 합니다.
+```sh
+npm install
+```
+
+'.env' 파일을 생성하고 아래와 같이 설정합니다.  
+```sh
+PORT=<서비스할포트번호>
+THREEJS_PATH=<three.js 가 있는 저장소>
+```
+
+## server 실행
+
+```sh
+npm run dev #개발모드 
+npm run start # 서비스 모드 
+```
+
+
+
 
 ####  html5(webgl) based dynamic 3d web-front-end application framework ####
 

@@ -33,8 +33,12 @@ Temporary Items
 .idea
 .vscode
 
-/node_modules
+node_modules/
 package-lock.json
+data/
+.env
+public/libs/
+
 
 
 
