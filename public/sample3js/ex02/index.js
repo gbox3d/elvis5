@@ -31,6 +31,8 @@ async function main() {
     points.push(new THREE.Vector3(10, 0, 0));
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    geometry.computeBoundingSphere()
+
     const line = new THREE.Line(geometry, material);
 
     scene.add(line);
@@ -53,6 +55,8 @@ async function main() {
         line.position.set(-50, 0, 0);
         scene.add(line);
     }
+
+    
 
     function animate() {
 

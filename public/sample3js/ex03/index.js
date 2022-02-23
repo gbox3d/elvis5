@@ -25,9 +25,10 @@ async function main() {
     const clock = new THREE.Clock();
     
     let r = 10;
-    let positions = [];
     
+    let positions = [];
     positions.push(0, 0, 0);
+
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
 
@@ -37,6 +38,10 @@ async function main() {
     line.position.set(0, 0, 0);
     scene.add(line);
 
+    //그리드 핼퍼 생성 
+    var grid_helper =  new THREE.GridHelper( 10, 10 ,0x00ff00,0xff0000);
+    grid_helper.rotation.x = THREE.Math.degToRad(90);
+    scene.add(grid_helper);
 
     function animate() {
         requestAnimationFrame(animate);

@@ -1,6 +1,10 @@
 import * as THREE from 'three';
-// import WEBGL from '/threejs/examples/jsm/capabilities/WebGL.js'
-import WEBGL from 'WebGL';
+import WEBGL from '/threejs/examples/jsm/capabilities/WebGL.js'
+// import  three.js/examples/jsm/controls/OrbitControls.js
+import { OrbitControls } from '/threejs/examples/jsm/controls/OrbitControls.js';
+
+// const theApp = {}
+globalThis.theApp = {}
 
 async function main() {
     console.log(`THREEJS Version : ${THREE.REVISION} `);
@@ -12,31 +16,21 @@ async function main() {
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
+    
+    //그리드 핼퍼 생성 
     var grid_helper =  new THREE.GridHelper( 10, 10 ,0x00ff00,0xff0000);
+    grid_helper.rotation.x = THREE.Math.degToRad(90);
     scene.add(grid_helper);
     
-    camera.position.y = 10
-    camera.position.z = 0; //카메라위치 
-
-    //반드시 카메라 위치를 변경한다음 카메라의 시점을 변경해준다. 그렇지않으면 이전위치기준으로 시점을 잡기 때문에 엉뚱한 곳을 바라볼수있다.
-    camera.lookAt(0,0,0); 
-    camera.up.set(0,0,1); //업벡터 재지정 
-
-    renderer.render(scene, camera);
+    camera.position.z = 10; //카메라위치 
+    
+    // CONTROLS
+    const cameraControls = new OrbitControls( camera, renderer.domElement );
+    cameraControls.target.set( 0, 0, 0 );
+    cameraControls.update();
 
     function animate() {
         requestAnimationFrame(animate);
-
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-
-        // camera.lookAt(0,0,0);
 
         renderer.render(scene, camera);
     };
@@ -49,6 +43,12 @@ async function main() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     })
+
+    //application object
+    theApp.camera = camera;
+    theApp.renderer = renderer;
+    theApp.scene = scene;
+    theApp.cameraControls = cameraControls;
 
 }
 
