@@ -1,7 +1,8 @@
 import express from 'express'
 import dotenv from "dotenv"
 import http from 'http'
-import fs from 'fs-ext'
+// import fs from 'fs-ext'
+import fs from 'fs-extra'
 import SocketIO from "socket.io";
 
 // console.log(SocketIO_version);
