@@ -12,6 +12,7 @@ async function main() {
 
     const glWindow = document.querySelector('.gl-container');
     const mousePos = document.querySelector('.mousePos');
+    const objPos = document.querySelector('.objPos');
     const cmdInput = document.querySelector('.cmdInput input');
 
     cmdInput.addEventListener('focus', () => {
@@ -54,9 +55,9 @@ async function main() {
 
                 //오빗컨트롤
                 //카메라의 현재 위치 기준으로 시작한다.
-                var controls = new OrbitControls(this.camera, this.renderer.domElement);
-                controls.target.set(0, 0, 0);
-                controls.update();
+                this.orbitControl = new OrbitControls(this.camera, this.renderer.domElement);
+                this.orbitControl.target.set(0, 0, 0);
+                this.orbitControl.update();
 
                 //트랜스폼 컨트롤러
                 this.trn_control = new TransformControls(this.camera, this.renderer.domElement);
@@ -67,9 +68,19 @@ async function main() {
                 });
                 this.trn_control.addEventListener('dragging-changed', function (event) {
 
-                    controls.enabled = !event.value;
-                    console.log(controls.enabled);
+                    scope.orbitControl.enabled = !event.value;
+                    // console.log(controls.enabled);
 
+                });
+                this.select_node = null;
+                this.trn_control.addEventListener('objectChange', function () {
+                    if(scope.select_node){
+                        let _text = objPos.querySelector('p')
+                        _text.innerHTML = `${scope.select_node.name} : ${scope.select_node.position.x.toFixed(2)} ${scope.select_node.position.y.toFixed(2)} ${scope.select_node.position.z.toFixed(2)}`;
+                        // scope.select_node.position.copy(scope.trn_control.object.position);
+                        // scope.select_node.quaternion.copy(scope.trn_control.object.quaternion);
+                        // scope.select_node.scale.copy(scope.trn_control.object.scale);
+                    }
                 });
 
                 this.scene.add(this.trn_control);
@@ -91,6 +102,7 @@ async function main() {
                 const geometry = new THREE.BoxGeometry();
                 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
                 const cube = new THREE.Mesh(geometry, material);
+                cube.name = "cube1"
                 cube.position.x = 0;
                 cube.position.y = 2;
                 this.cube = cube
@@ -153,9 +165,9 @@ async function main() {
                 if (intersects.length > 0) {
                     if (this.select_node !== intersects[0].object) {
                         let node = intersects[0].object;
-                        if (this.select_node) {
-                            this.select_node.material = this.select_node.origin_material;
-                        }
+                        // if (this.select_node) {
+                        //     this.select_node.material = this.select_node.origin_material;
+                        // }
                         this.trn_control.attach(node);
                         this.select_node = node;
                     }
@@ -222,6 +234,13 @@ async function main() {
                 }
             }
 
+        }
+    });
+
+    document.querySelector(".focus-object").addEventListener("click", function () {
+        if(Smgr.select_node){
+            Smgr.orbitControl.target.copy(Smgr.select_node.position);
+            Smgr.orbitControl.update();
         }
     });
 
