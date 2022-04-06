@@ -66,7 +66,7 @@ export default class elvis5 {
             param = {};
         }
 
-        var container = document.body;
+        // var container = document.body;
 
         if (param.window_size) {
             this.window_size = param.window_size;
@@ -195,21 +195,26 @@ export default class elvis5 {
                 //          this.renderer.setSize( this.window_size.width, this.window_size.height);
 
                 break;
+            case 'dummy':
+                console.log('dummy renderer')
+                break;
             default:
                 console.error('unknown renderer');
                 break;
         }
 
-        this.renderer_type = param.renderer.type;
+        if (this.renderer) {
+            this.renderer_type = param.renderer.type;
 
-        this.renderer.setSize(this.window_size.width, this.window_size.height);
+            this.renderer.setSize(this.window_size.width, this.window_size.height);
 
-        //컨테인너 노드에 자식으로 붙이기
-        if (param.renderer.container) {
-            param.renderer.container.appendChild(this.renderer.domElement);
-        }
-        else {
-            document.body.appendChild(this.renderer.domElement);
+            //컨테인너 노드에 자식으로 붙이기
+            if (param.renderer.container) {
+                param.renderer.container.appendChild(this.renderer.domElement);
+            }
+            else {
+                document.body.appendChild(this.renderer.domElement);
+            }
         }
 
         const THAT = this;
@@ -229,30 +234,30 @@ export default class elvis5 {
             //입력기 관련 이밴트
             if (param.event.onMouseDown) {
 
-                this.renderer.domElement.addEventListener('mousedown', param.event.onMouseDown.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('mousedown', param.event.onMouseDown.bind(THAT), false);
 
             }
             if (param.event.onMouseUp) {
 
-                this.renderer.domElement.addEventListener('mouseup', param.event.onMouseUp.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('mouseup', param.event.onMouseUp.bind(THAT), false);
 
             }
             if (param.event.onMouseMove) {
 
-                this.renderer.domElement.addEventListener('mousemove', param.event.onMouseMove.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('mousemove', param.event.onMouseMove.bind(THAT), false);
 
             }
 
             if (param.event.onTouchStart) {
-                this.renderer.domElement.addEventListener('touchstart', param.event.onTouchStart.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('touchstart', param.event.onTouchStart.bind(THAT), false);
 
             }
             if (param.event.onTouchEnd) {
-                this.renderer.domElement.addEventListener('touchend', param.event.onTouchEnd.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('touchend', param.event.onTouchEnd.bind(THAT), false);
 
             }
             if (param.event.onTouchMove) {
-                this.renderer.domElement.addEventListener('touchmove', param.event.onTouchMove.bind(THAT), false);
+                this.renderer?.domElement.addEventListener('touchmove', param.event.onTouchMove.bind(THAT), false);
 
             }
 
