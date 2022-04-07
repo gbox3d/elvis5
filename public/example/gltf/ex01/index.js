@@ -66,6 +66,7 @@ async function main() {
             // model lodaing
             let _gltf = await new Promise((resolve, reject) => {
 
+                // new GLTFLoader().load('https://cam2us.ubiqos.co.kr:24030/repos_root/test2/file/wine_bottles_01_1k.gltf', function (gltf) {
                 new GLTFLoader().load('./file/wine_bottles_01_1k.gltf', function (gltf) {
 
                     gltf.scene.traverse(function (child) {
