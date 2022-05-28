@@ -8,6 +8,8 @@
 
 /*
 
+2022.0522 : mouseover, mouseout 이벤트 추가
+
 r03,2015.12.1
  직교투영추가
 
@@ -232,21 +234,28 @@ export default class elvis5 {
             }
 
             //입력기 관련 이밴트
-            if (param.event.onMouseDown) {
+            param.event.onMouseDown ? this.renderer?.domElement.addEventListener('mousedown', param.event.onMouseDown.bind(THAT), false) : null;
+            param.event.onMouseUp ? this.renderer?.domElement.addEventListener('mouseup', param.event.onMouseUp.bind(THAT), false) : null;
+            param.event.onMouseMove ? this.renderer?.domElement.addEventListener('mousemove', param.event.onMouseMove.bind(THAT), false) : null;
+            param.event.onMouseWheel ? this.renderer?.domElement.addEventListener('mousewheel', param.event.onMouseWheel.bind(THAT), false) : null;
+            param.event.onMouseOver ? this.renderer?.domElement.addEventListener('mouseover', param.event.onMouseOver.bind(THAT), false) : null;
+            param.event.onMouseLeave ? this.renderer?.domElement.addEventListener('mouseleave', param.event.onMouseLeave.bind(THAT), false) : null;
 
-                this.renderer?.domElement.addEventListener('mousedown', param.event.onMouseDown.bind(THAT), false);
+            // if (param.event.onMouseDown) {
 
-            }
-            if (param.event.onMouseUp) {
+            //     this.renderer?.domElement.addEventListener('mousedown', param.event.onMouseDown.bind(THAT), false);
 
-                this.renderer?.domElement.addEventListener('mouseup', param.event.onMouseUp.bind(THAT), false);
+            // }
+            // if (param.event.onMouseUp) {
 
-            }
-            if (param.event.onMouseMove) {
+            //     this.renderer?.domElement.addEventListener('mouseup', param.event.onMouseUp.bind(THAT), false);
 
-                this.renderer?.domElement.addEventListener('mousemove', param.event.onMouseMove.bind(THAT), false);
+            // }
+            // if (param.event.onMouseMove) {
+            //     this.renderer?.domElement.addEventListener('mousemove', param.event.onMouseMove.bind(THAT), false);
+            // }
 
-            }
+            
 
             if (param.event.onTouchStart) {
                 this.renderer?.domElement.addEventListener('touchstart', param.event.onTouchStart.bind(THAT), false);
