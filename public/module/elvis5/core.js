@@ -56,12 +56,13 @@ util.createDummy 함수에서 기본 랜더러를 webgl로 수정
  */
 
 import * as THREE from 'three';
+import gameObject from './gameObject.js';
 
 // import WEBGL from 'WebGL';
 
 // elvis5.scene.SceneManager = function(param) {
 export default class elvis5 {
-    
+
     constructor(param) {
 
         this.THREE = THREE;
@@ -388,18 +389,6 @@ export default class elvis5 {
         }
 
     }
-    // //트랙볼 카메라 컨트롤러 추가
-    // addTBCameraController(param) {
-
-    //     if (this.CameraController != undefined) {
-    //         this.CameraController.release();
-    //     }
-
-    //     this.CameraController = new elvis5.scene.TBCameraController(param);
-
-    //     return this.CameraController;
-
-    // }
     addAmbientLight(color) {
         var ambientLight = new THREE.AmbientLight(color || 0x222222);
         this.scene.add(ambientLight);
@@ -415,8 +404,13 @@ export default class elvis5 {
 
         this.scene.add(directionalLight);
     }
+
+    createGameObject(param) {
+        return new gameObject({
+            entity : param.entity,
+            engine : this
+        });
+    }
 }
-
-
 
 
