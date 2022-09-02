@@ -61,7 +61,11 @@ import * as THREE from 'three';
 
 // elvis5.scene.SceneManager = function(param) {
 export default class elvis5 {
+    
     constructor(param) {
+
+        this.THREE = THREE;
+
         if (param == undefined) {
             param = {};
         }
