@@ -34,10 +34,27 @@ export default class gameObject {
 
     async addScriptFromFileID(fileID) {
 
+        let res = await (await (fetch(`/com/file/findOne/${fileID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/text',
+                'authorization': localStorage.getItem('jwt_token')
+            }
+        }))).json();
+        console.log(res)
+
+        
+
+        if (res.r === 'ok') {
+
+            const _script = await (await fetch(`/com/file/download/pub/${fileID}`)).text();
+            this._addScript(_script);
+        }
+
         // const _script = await (await fetch(`./file/${fileID}`)).text();
 
 
-        this._addScript(_script);
+        
     }
 
     
