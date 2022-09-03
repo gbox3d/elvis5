@@ -32,30 +32,38 @@ export default class gameObject {
         
     }
 
-    async addScriptFromFileID(fileID) {
+    async addScriptFromFileID({fileID,repo_address=''}) {
 
-        let res = await (await (fetch(`/com/file/findOne/${fileID}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/text',
-                'authorization': localStorage.getItem('jwt_token')
-            }
-        }))).json();
-        console.log(res)
 
-        
-
-        if (res.r === 'ok') {
-
-            const _script = await (await fetch(`/com/file/download/pub/${fileID}`)).text();
+        try {
+            const _script = await (await fetch(`${repo_address}/com/file/download/pub/${fileID}`)).text();
             this._addScript(_script);
+            // return true;
         }
+        catch (e) {
+            console.log(e);
+            return e
+        }
+            
 
-        // const _script = await (await fetch(`./file/${fileID}`)).text();
+        // let res = await (await (fetch(`/com/file/findOne/${fileID}`, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/text',
+        //         'authorization': localStorage.getItem('jwt_token')
+        //     }
+        // }))).json();
+        // console.log(res)
 
+        // if (res.r === 'ok' && res.data ) {
 
+            
+
+        //     return true
+        // }
+
+        // return false
         
     }
-
     
 }
