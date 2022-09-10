@@ -21,7 +21,7 @@ async function main() {
             fov: 45,
             far: 5000,
             near: 1,
-            position: new THREE.Vector3(0, 0, 10),
+            position: new THREE.Vector3(10, 10, 10),
             lookat: new THREE.Vector3()
 
         },
@@ -55,66 +55,78 @@ async function main() {
             document.body.appendChild(stats.domElement);
             this.stats = stats;
 
+            //player collider
+            this.playerCollider = new Capsule(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), 1);
+
             //object setup
+            const capsuleNode = new THREE.Group();
             const geometry = new THREE.CapsuleGeometry(0.5, 1, 4, 8);
             const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-            const cube = new THREE.Mesh(geometry, material);
-            this.scene.add(cube);
-            this.CapsuleNode = cube;
+            const capsuleMesh = new THREE.Mesh(geometry, material);
+            capsuleMesh.position.set(-0.5,0, -0.5);
+            capsuleNode.add(capsuleMesh);
+            this.scene.add(capsuleNode);
+            this.CapsuleNode = capsuleNode;
+            
 
 
-            const _group = new THREE.Group();
+            // const _group = new THREE.Group();
 
             this.redWireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
             this.greenWireMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
+            //octree setup
+            this.octree = new Octree();
+            // this.octree.fromGraphNode(_group);
 
             {
                 const ground = new THREE.Mesh(
                     new THREE.PlaneBufferGeometry(10, 10, 5, 5),
                     this.greenWireMaterial
                 );
-                ground.rotation.x = THREE.Math.degToRad(-45);
-                ground.position.y = 0;
-                _group.add(ground);
+                // ground.rotation.x = THREE.Math.degToRad(90);
+                // ground.position.z = 5;
+                this.octree.fromGraphNode(ground);
+                // _group.add(ground);
+                this.scene.add(ground);
 
             }
+
+            {
+                const ground = new THREE.Mesh(
+                    new THREE.PlaneBufferGeometry(10, 10, 5, 5),
+                    this.greenWireMaterial
+                );
+                ground.rotation.y = THREE.Math.degToRad(90);
+                // ground.position.z = 5;
+                this.octree.fromGraphNode(ground);
+                // _group.add(ground);
+                this.scene.add(ground);
+
+            }
+
             {
                 const ground = new THREE.Mesh(
                     new THREE.PlaneBufferGeometry(10, 10, 5, 5),
                     this.greenWireMaterial
                 );
                 // ground.rotationOrder = 'XYZ';
-                ground.rotation.y = THREE.Math.degToRad(90);
-                
-                ground.position.x = -2;
-                _group.add(ground);
-            }
-            {
-                const ground = new THREE.Mesh(
-                    new THREE.PlaneBufferGeometry(10, 10, 5, 5),
-                    this.greenWireMaterial
-                );
-                ground.rotation.x = THREE.Math.degToRad(-45);
-                ground.position.y = 5;
-                _group.add(ground);
+                // ground.rotation.x = THREE.Math.degToRad(90);
+                ground.position.z = -5;
+                this.octree.fromGraphNode(ground);
+                this.scene.add(ground);
 
+                // _group.add(ground);
             }
+
             
-            this.scene.add(_group);
-
-            this.playerCollider = new Capsule(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), 0.5);
-
-            //octree setup
-            this.octree = new Octree();
-            this.octree.fromGraphNode(_group);
-
             //transformControl setup
             this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
-            this.transformControl.attach(cube);
+            this.transformControl.attach(this.CapsuleNode);
             this.scene.add(this.transformControl);
+            
             this.transformControl.addEventListener('dragging-changed', (event) => {
-                orbitControl.enabled = !event.value;
+                orbitControl.enabled = !event.value; //orbitControl 사용중이면 false
             });
 
             //GUI
@@ -148,25 +160,23 @@ async function main() {
             },
             onUpdate: function (event) {
 
-                this.playerCollider.start.copy(this.transformControl.object.position.clone().add(
-                    new THREE.Vector3(0, -0.5, 0) //돔의 반지름을 뺀길이
-                ));
-                this.playerCollider.end.copy(this.transformControl.object.position.clone().add(
-                    new THREE.Vector3(0, 1, 0) 
-                )
-                );
-                
+                this.playerCollider.start.copy(this.transformControl.object.position.clone());
+                this.playerCollider.end.copy(this.transformControl.object.position.clone());
 
                 const result = this.octree.capsuleIntersect(this.playerCollider);
 
                 if (result) {
                     // console.log(result);
                     this.gui.collision.setValue(result.depth.toFixed(2));
-                    this.CapsuleNode.material = this.redWireMaterial;
+                    // this.CapsuleNode.material = this.redWireMaterial;
+
+                    this.CapsuleNode.children[0].material = this.redWireMaterial;
                 }
                 else {
                     this.gui.collision.setValue('0.0');
-                    this.CapsuleNode.material = this.greenWireMaterial;
+                    // this.CapsuleNode.material = this.greenWireMaterial;
+
+                    this.CapsuleNode.children[0].material = this.greenWireMaterial;
                 }
 
                 // console.log(result);
