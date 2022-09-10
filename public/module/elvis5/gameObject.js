@@ -1,15 +1,16 @@
 export default class gameObject {
 
-    constructor({engine, entity}) {
+    constructor({ engine, entity }) {
         this.engine = engine;
         this.entity = entity;
         this.entity.gameObject = this;
+
     }
 
     start() {
         // console.log("start");
         this._start ? this._start() : null;
-        
+
     }
 
     update(event) {
@@ -17,53 +18,59 @@ export default class gameObject {
         this._update ? this._update(event) : null;
     }
 
-    _addScript(_script) {
+    _setScript(_script) {
         const _codeObj = (new Function('engine', _script)).bind(this)(this.engine);
 
         this._update = _codeObj.update;
         this._start = _codeObj.start;
-        
+
     }
 
-    async addScriptFromUrl(url) {
+    async setScriptFromUrl(url) {
 
-        const _script = await (await fetch(url)).text();
-        this._addScript(_script);
-        
+        try {
+            this.scriptFileUrl = url;
+            const _script = await (await fetch(url)).text();
+            this._setScript(_script);
+
+            return {
+                r: 'ok',
+                script : _script
+            }
+
+        }
+        catch (e) {
+            return {
+                error: e,
+                r: 'error'
+            }
+        }
+
     }
 
-    async addScriptFromFileID({fileID,repo_address=''}) {
-
+    async setScriptFromFileID({ fileID, repo_address = '' }) {
 
         try {
             const _script = await (await fetch(`${repo_address}/com/file/download/pub/${fileID}`)).text();
-            this._addScript(_script);
-            // return true;
+            this.scriptFileId = fileID;
+            this._setScript(_script);
+            return {
+                r: 'ok',
+                script: _script
+            }
         }
         catch (e) {
             console.log(e);
-            return e
+            return {
+                error: e,
+                r: 'error'
+            }
         }
-            
-
-        // let res = await (await (fetch(`/com/file/findOne/${fileID}`, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/text',
-        //         'authorization': localStorage.getItem('jwt_token')
-        //     }
-        // }))).json();
-        // console.log(res)
-
-        // if (res.r === 'ok' && res.data ) {
-
-            
-
-        //     return true
-        // }
-
-        // return false
-        
     }
-    
+
+    removeScript() {
+        this._update = null;
+        this._start = null;
+    }
+
 }

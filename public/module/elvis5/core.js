@@ -63,6 +63,9 @@ import gameObject from './gameObject.js';
 // elvis5.scene.SceneManager = function(param) {
 export default class elvis5 {
 
+    static version = 'r01';
+    gameObjects = [];
+
     constructor(param) {
 
         this.THREE = THREE;
@@ -405,12 +408,63 @@ export default class elvis5 {
         this.scene.add(directionalLight);
     }
 
-    createGameObject(param) {
-        return new gameObject({
-            entity : param.entity,
-            engine : this
-        });
+    createMeshEntity({ geometry, material, position, rotation, scale }) {
+        const object = new THREE.Mesh(geometry, material ? material : scope.defaultMaterial);
+        position ? object.position.copy(position) : null;
+        rotation ? object.rotation.copy(rotation) : null;
+        scale ? object.scale.copy(scale) : null;
+        // scope.root_dummy.add(object);
+        return object;
     }
+
+    // game object
+    createGameObject({
+        entity,
+        geometry,
+        material
+    }) {
+
+        if (entity) {
+            const _gameobject = new gameObject({
+                entity: entity,
+                engine: this
+            });
+
+            this.gameObjects.push(_gameobject);
+
+            return _gameobject;
+
+        }
+        else if (geometry) {
+
+            const _entity = this.createMeshEntity({
+                geometry: geometry,
+                material: material
+            });
+
+            const _gameobject = new gameObject({
+                entity: _entity,
+                engine: this
+            });
+
+            this.gameObjects.push(_gameobject);
+
+            return _gameobject;
+        }
+    }
+
+    removeGameObject(gameObject) {
+        this.gameObjects.splice(this.gameObjects.indexOf(gameObject), 1);
+
+        this.scene.remove(gameObject.entity);
+    }
+
+    clearGameObjects() {
+        this.gameObjects = [];
+    }
+
+
+
 }
 
 
