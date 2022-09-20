@@ -74,7 +74,7 @@ async function main() {
                     new THREE.PlaneBufferGeometry(10, 10, 5, 5),
                     this.greenWireMaterial
                 );
-                ground.rotation.x = THREE.Math.degToRad(-45);
+                ground.rotation.x = THREE.MathUtils.degToRad(-45);
                 ground.position.y = 0;
                 _group.add(ground);
 
@@ -85,7 +85,7 @@ async function main() {
                     this.greenWireMaterial
                 );
                 // ground.rotationOrder = 'XYZ';
-                ground.rotation.y = THREE.Math.degToRad(90);
+                ground.rotation.y = THREE.MathUtils.degToRad(90);
                 
                 ground.position.x = -2;
                 _group.add(ground);
@@ -95,7 +95,7 @@ async function main() {
                     new THREE.PlaneBufferGeometry(10, 10, 5, 5),
                     this.greenWireMaterial
                 );
-                ground.rotation.x = THREE.Math.degToRad(-45);
+                ground.rotation.x = THREE.MathUtils.degToRad(-45);
                 ground.position.y = 5;
                 _group.add(ground);
 

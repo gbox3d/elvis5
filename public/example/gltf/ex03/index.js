@@ -51,8 +51,8 @@ async function main() {
 
             let texture = await new Promise((resolve, reject) => {
                 new RGBELoader()
-                    .setPath('../../../../repos_root/test2/hdr/')
-                    .load('autumn_forest_04_4k.hdr', function (texture) {
+                    // .setPath('./')
+                    .load('autumn_forest_04_1k.hdr', function (texture) {
                         return resolve(texture);
                     }, 
                     function (xhr) {
@@ -73,7 +73,7 @@ async function main() {
 
             let object = await new Promise((resolve, reject) => {
                 new GLTFLoader()
-                    .setPath('../../../../repos_root/test2/file/food_apple_01_1k.gltf/')
+                    .setPath('./food_apple_01_1k.gltf/')
                     .load('food_apple_01_1k.gltf', function (gltf) {
                         return resolve(gltf.scene);
                     },

@@ -97,7 +97,7 @@ async function main() {
                     new THREE.PlaneBufferGeometry(10, 10, 5, 5),
                     this.greenWireMaterial
                 );
-                ground.rotation.y = THREE.Math.degToRad(90);
+                ground.rotation.y = THREE.MathUtils.degToRad(90);
                 // ground.position.z = 5;
                 this.octree.fromGraphNode(ground);
                 // _group.add(ground);

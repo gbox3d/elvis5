@@ -78,7 +78,7 @@ async function main() {
                             { 
                                 color: 0xff0000, 
                             } ) );
-            plane.rotation.x = THREE.Math.degToRad(-90);
+            plane.rotation.x = THREE.MathUtils.degToRad(-90);
             plane.position.y = 0;
             this.scene.add( plane );
 

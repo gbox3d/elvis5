@@ -40,7 +40,7 @@ async function main() {
 
     //그리드 핼퍼 생성 
     var grid_helper =  new THREE.GridHelper( 10, 10 ,0x00ff00,0xff0000);
-    grid_helper.rotation.x = THREE.Math.degToRad(90);
+    grid_helper.rotation.x = THREE.MathUtils.degToRad(90);
     scene.add(grid_helper);
 
     function animate() {

@@ -75,12 +75,12 @@ async function main() {
                     // _matrix.makeTranslation(0,2,0);
 
                     _matrix.compose(new THREE.Vector3(0,2,0),
-                    (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(1,1,1), THREE.Math.degToRad(45)),
+                    (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(1,1,1), THREE.MathUtils.degToRad(45)),
                     new THREE.Vector3(2,2,2));
 
                     cube.matrixAutoUpdate = false;
                     cube.matrix.identity();
-                    cube.applyMatrix(_matrix);
+                    cube.applyMatrix4(_matrix);
                     cube.matrixAutoUpdate = true;
 
                 }
