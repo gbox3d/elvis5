@@ -1,9 +1,15 @@
+/* 
+"state" : "/threejs/examples/jsm/libs/stats.module.js",
+"WebGL" : "/threejs/examples/jsm/capabilities/WebGL.js",
+"lil-gui" : "/threejs/examples/jsm/libs/lil-gui.module.min.js",
+                */
+                
 import * as THREE from 'three';
-import Stats from 'state';
-import WEBGL from 'WebGL';
-import {GUI} from 'lil-gui';
+import Stats from 'three/addons/libs/stats.module.js';
+import WEBGL from 'three/addons/capabilities/WebGL.js';
+import {GUI} from 'three/addons/libs/lil-gui.module.min.js';
 
-import { OrbitControls } from 'OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import Elvis from 'elvis';
 

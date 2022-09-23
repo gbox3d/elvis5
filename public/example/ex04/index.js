@@ -62,7 +62,7 @@ async function main() {
             //3디오브잭트용 리소스 생성
             // var cube_geometry = new THREE.CubeGeometry(1,1,1);
             const cube_geometry = new THREE.BoxGeometry();
-            const cube_material = new THREE.MeshPhongMaterial(
+            const cube_material = new THREE.MeshStandardMaterial(
                     {
                         // ambient: 0x999999, 
                         color: 0x00ff00, 
@@ -70,6 +70,7 @@ async function main() {
                         transparent : true,
                         opacity : 0.5 //반투명에도 그림자는 선명할까?
                     } );
+            scope.material = cube_material;
 
             // Ground
             var plane = new THREE.Mesh(
