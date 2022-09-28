@@ -71,7 +71,10 @@ export default class elvis5 {
     constructor(param) {
 
         this.THREE = THREE;
+        this.setup(param);
 
+    }
+    setup(param) {
         if (param == undefined) {
             param = {};
         }
@@ -251,7 +254,7 @@ export default class elvis5 {
             param.event.onPointerMove ? this.renderer?.domElement.addEventListener('pointermove', param.event.onPointerMove.bind(THAT), false) : null;
             param.event.onPointerDown ? this.renderer?.domElement.addEventListener('pointerdown', param.event.onPointerDown.bind(THAT), false) : null;
             param.event.onPointerUp ? this.renderer?.domElement.addEventListener('pointerup', param.event.onPointerUp.bind(THAT), false) : null;
-            
+
 
             if (param.event.onTouchStart) {
                 this.renderer?.domElement.addEventListener('touchstart', param.event.onTouchStart.bind(THAT), false);
@@ -434,7 +437,11 @@ export default class elvis5 {
         this.gameObjects = [];
     }
 
-
+    removeAllChildren(entity) {
+        while (entity.children.length > 0) {
+            entity.remove(entity.children[0]);
+        }
+    }
 
 }
 
