@@ -87,7 +87,6 @@ async function main() {
             entity.position.x = 0;
             entity.position.y = 2;
             this.scene.add(entity);
-
             this.entity = entity;
 
             //box helper
