@@ -296,6 +296,10 @@ export default class elvis5 {
             (param.setup.bind(this))();
         }
 
+        //default object
+        this.defaultMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        this.defaultGeometry = new THREE.BoxGeometry(1, 1, 1);
+
     }
 
     startRender() {
@@ -383,7 +387,7 @@ export default class elvis5 {
     }
 
     createMeshEntity({ geometry, material, position, rotation, scale }) {
-        const object = new THREE.Mesh(geometry, material ? material : scope.defaultMaterial);
+        const object = new THREE.Mesh(geometry, material ? material : this.defaultMaterial);
         position ? object.position.copy(position) : null;
         rotation ? object.rotation.copy(rotation) : null;
         scale ? object.scale.copy(scale) : null;
